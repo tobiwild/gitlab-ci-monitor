@@ -2,7 +2,7 @@ defmodule GitlabCiMonitor.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", GitlabCiMonitor.RoomChannel
+  channel "gitlab:lobby", GitlabCiMonitor.GitlabChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

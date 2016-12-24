@@ -11,10 +11,7 @@ config :gitlab_ci_monitor, GitlabCiMonitor.Endpoint,
   secret_key_base: "M+DP1PJccEqZzmfJNAO5JGhzAeM73vjCKHlvXRa4a745/5vBGWAH7x2u5nnBaeTx",
   render_errors: [view: GitlabCiMonitor.ErrorView, accepts: ~w(html json)],
   pubsub: [name: GitlabCiMonitor.PubSub,
-           adapter: Phoenix.PubSub.PG2],
-  gitlab_url: System.get_env("GITLAB_URL"),
-  gitlab_token: System.get_env("GITLAB_TOKEN"),
-  gitlab_projects: String.split(System.get_env("GITLAB_PROJECTS"), ",")
+           adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,

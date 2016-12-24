@@ -12,8 +12,12 @@ config :gitlab_ci_monitor, GitlabCiMonitor.Endpoint,
   code_reloader: true,
   check_origin: false,
   watchers: [node: ["node_modules/brunch/bin/brunch", "watch", "--stdin",
-                    cd: Path.expand("../", __DIR__)]]
-
+                    cd: Path.expand("../", __DIR__)]],
+  gitlab_url: "http://localhost:8080/api/v3",
+  gitlab_token: "cw3beEjLvG294Zgyx58X",
+  gitlab_projects: [
+    "root/test"
+  ]
 
 # Watch static and templates for browser reloading.
 config :gitlab_ci_monitor, GitlabCiMonitor.Endpoint,

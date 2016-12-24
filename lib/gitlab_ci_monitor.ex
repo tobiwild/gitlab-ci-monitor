@@ -12,6 +12,7 @@ defmodule GitlabCiMonitor do
       supervisor(GitlabCiMonitor.Endpoint, []),
       # Start your own worker by calling: GitlabCiMonitor.Worker.start_link(arg1, arg2, arg3)
       # worker(GitlabCiMonitor.Worker, [arg1, arg2, arg3]),
+      worker(GitlabCiMonitor.Server, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

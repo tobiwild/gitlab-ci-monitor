@@ -6,11 +6,11 @@ defmodule Gitlab do
   def listener(callback) do
   end
 
-  def get do
+  def fetch_projects do
     pmap(config(:gitlab_projects), fn(project) ->
       project_id = URI.encode_www_form(project)
-      %{commit: %{id: sha}} = Branches.find(project_id, "master", client)
-      commit = Commits.find(project_id, sha, client)
+      branch = Branches.find(project_id, "master", client)
+      commit = Commits.find(project_id, branch.commit.id, client)
       Map.put_new(commit, :project, project)
     end)
   end
