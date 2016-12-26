@@ -23,6 +23,6 @@ import Elm from './main'
 const elmDiv = document.querySelector('#elm-target');
 
 if (elmDiv) {
-  // var websocketUrl = 'ws://' + window.location.hostname + '/socket/websocket'
-  Elm.Main.embed(elmDiv);
+  var websocketUrl = 'ws://' + window.location.host + '/socket/websocket'
+  Elm.Main.embed(elmDiv, {websocketUrl: websocketUrl});
 }

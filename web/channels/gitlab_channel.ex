@@ -3,10 +3,16 @@ defmodule GitlabCiMonitor.GitlabChannel do
 
   def join("gitlab:lobby", payload, socket) do
     if authorized?(payload) do
+      send(self, :after_join)
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
     end
+  end
+
+  def handle_info(:after_join, socket) do
+    push socket, "projects", %{list: GitlabCiMonitor.Server.projects}
+    {:noreply, socket}
   end
 
   # Channels can be used in a request/response fashion
