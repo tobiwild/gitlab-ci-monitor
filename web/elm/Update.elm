@@ -11,7 +11,7 @@ import Json.Decode.Extra exposing ((|:))
 decodeProject : Decoder Project
 decodeProject =
     Decode.succeed Project
-        |: (field "project" Decode.string)
+        |: (field "name" Decode.string)
 
 
 decodeProjects : Decoder (List Project)

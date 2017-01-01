@@ -11,7 +11,7 @@ defmodule GitlabCiMonitor.GitlabChannel do
   end
 
   def handle_info(:after_join, socket) do
-    push socket, "projects", %{list: GitlabCiMonitor.Server.projects}
+    push socket, "projects", %{list: GitlabCiMonitor.Repository.projects}
     {:noreply, socket}
   end
 

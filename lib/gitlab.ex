@@ -2,23 +2,69 @@ defmodule Gitlab do
   alias Tanuki.Client
   alias Tanuki.Projects.Repository.Branches
   alias Tanuki.Projects.Repository.Commits
+  alias Tanuki.Projects
 
-  def listener(callback) do
-  end
-
-  def fetch_projects do
+  def fetch_commits do
     pmap(config(:gitlab_projects), fn(project) ->
       project_id = URI.encode_www_form(project)
       branch = Branches.find(project_id, "master", client)
       commit = Commits.find(project_id, branch.commit.id, client)
-      Map.put_new(commit, :project, project)
-    end)
+
+      {
+        project,
+        %{
+          :status => commit[:status],
+          :author => commit[:author_name],
+          :created_at => commit[:created_at]
+        }
+      }
+    end) |> Enum.into(%{})
+  end
+
+  def fetch_projects do
+    pmap(config(:gitlab_projects), fn(project_id) ->
+      project = Projects.find(URI.encode_www_form(project_id), client)
+
+      {
+        project_id,
+        %{
+          :name => project[:name_with_namespace],
+          :image => project[:avatar_url]
+        }
+      }
+    end) |> Enum.into(%{})
+  end
+
+  def fetch_statistics do
+    pmap(config(:gitlab_projects), fn(project_id) ->
+      duration = list_pipelines(project_id)
+      |> Stream.filter(fn p -> p[:ref] == "master" end)
+      |> Stream.filter(fn p -> p[:status] == "success" end)
+      |> Stream.filter(fn p -> p[:duration] != nil end)
+      |> Stream.map(fn p -> p[:duration] end)
+      |> Enum.to_list
+      |> average
+
+      {
+        project_id,
+        %{
+          :duration => duration
+        }
+      }
+    end) |> Enum.into(%{})
+  end
+
+  defp average([]), do: 0
+  defp average(list), do: Enum.sum(list) / length(list)
+
+  defp list_pipelines(project_id) do
+    Tanuki.get("projects/#{URI.encode_www_form(project_id)}/pipelines", client)
   end
 
   defp pmap(collection, function) do
     collection
     |> Enum.map(&Task.async(fn -> function.(&1) end))
-    |> Enum.map(&Task.await(&1))
+    |> Enum.map(&Task.await/1)
   end
 
   defp client do
