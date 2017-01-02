@@ -12,6 +12,12 @@ decodeProject : Decoder Project
 decodeProject =
     Decode.succeed Project
         |: (field "name" Decode.string)
+        |: (field "image" Decode.string)
+        |: (field "status" Decode.string)
+        |: (field "duration" Decode.float)
+        |: (field "last_commit_author" Decode.string)
+        |: (field "last_commit_message" Decode.string)
+        |: (field "updated_at" Json.Decode.Extra.date)
 
 
 decodeProjects : Decoder (List Project)

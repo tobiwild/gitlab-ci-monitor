@@ -14,8 +14,9 @@ defmodule Gitlab do
         project,
         %{
           :status => commit[:status],
-          :author => commit[:author_name],
-          :created_at => commit[:created_at]
+          :last_commit_author => commit[:author_name],
+          :last_commit_message => commit[:message],
+          :updated_at => commit[:created_at]
         }
       }
     end) |> Enum.into(%{})
