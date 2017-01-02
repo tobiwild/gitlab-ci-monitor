@@ -1,11 +1,11 @@
-defmodule GitlabCiMonitor.Server.Statistics do
+defmodule GitlabCiMonitor.Server.Commits do
   use GitlabCiMonitor.Server
 
   def update(_) do
-    Gitlab.fetch_statistics
+    Gitlab.fetch_commits
   end
 
   def update_after() do
-    120 * 1000
+    30 * 1000
   end
 end

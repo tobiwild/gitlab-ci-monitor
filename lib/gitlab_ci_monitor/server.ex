@@ -9,7 +9,7 @@ defmodule GitlabCiMonitor.Server do
       @behaviour GitlabCiMonitor.Server
 
       def start_link do
-        GenServer.start_link(__MODULE__, [], name: __MODULE__)
+        GenServer.start_link(__MODULE__, nil, name: __MODULE__)
       end
 
       def items do
@@ -22,8 +22,18 @@ defmodule GitlabCiMonitor.Server do
       end
 
       def handle_info(:update, state) do
-        state = update(state)
+        new_state = update(state)
         schedule_work()
+
+        if state != nil and new_state != state do
+          send self, :notify
+        end
+
+        {:noreply, new_state}
+      end
+
+      def handle_info(:notify, state) do
+        GenEvent.notify(:gitlab_event_manager, :update)
         {:noreply, state}
       end
 

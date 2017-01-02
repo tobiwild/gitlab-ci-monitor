@@ -12,6 +12,7 @@ defmodule GitlabCiMonitor do
       supervisor(GitlabCiMonitor.Endpoint, []),
       # Start your own worker by calling: GitlabCiMonitor.Worker.start_link(arg1, arg2, arg3)
       # worker(GitlabCiMonitor.Worker, [arg1, arg2, arg3]),
+      worker(GenEvent, [[name: :gitlab_event_manager]])
     ]
 
     children = children ++ Enum.map(GitlabCiMonitor.Repository.servers, fn server ->
@@ -21,7 +22,9 @@ defmodule GitlabCiMonitor do
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: GitlabCiMonitor.Supervisor]
-    Supervisor.start_link(children, opts)
+    with {:ok, pid} <- Supervisor.start_link(children, opts),
+        :ok <- GenEvent.add_handler(:gitlab_event_manager, GitlabCiMonitor.EventManager, nil),
+      do: {:ok, pid}
   end
 
   # Tell Phoenix to update the endpoint configuration

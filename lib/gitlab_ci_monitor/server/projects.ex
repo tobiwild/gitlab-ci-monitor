@@ -6,6 +6,6 @@ defmodule GitlabCiMonitor.Server.Projects do
   end
 
   def update_after() do
-    60 * 1000
+    30 * 1000
   end
 end

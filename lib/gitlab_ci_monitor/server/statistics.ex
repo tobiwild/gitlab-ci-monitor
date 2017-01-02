@@ -1,8 +1,8 @@
-defmodule GitlabCiMonitor.Server.Commits do
+defmodule GitlabCiMonitor.Server.Statistics do
   use GitlabCiMonitor.Server
 
   def update(_) do
-    Gitlab.fetch_commits
+    Gitlab.fetch_statistics
   end
 
   def update_after() do

@@ -15,6 +15,11 @@ defmodule GitlabCiMonitor.GitlabChannel do
     {:noreply, socket}
   end
 
+  def broadcast_projects do
+    IO.inspect GitlabCiMonitor.Repository.projects
+    GitlabCiMonitor.Endpoint.broadcast("gitlab:lobby", "projects", %{list: GitlabCiMonitor.Repository.projects})
+  end
+
   # Channels can be used in a request/response fashion
   # by sending replies to requests from the client
   def handle_in("ping", payload, socket) do
