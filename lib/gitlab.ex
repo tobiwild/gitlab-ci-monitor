@@ -30,7 +30,7 @@ defmodule Gitlab do
         project_id,
         %{
           :name => project[:name_with_namespace],
-          :image => project[:avatar_url]
+          :image => parse_image(project)
         }
       }
     end) |> Enum.into(%{})
@@ -54,6 +54,16 @@ defmodule Gitlab do
       }
     end) |> Enum.into(%{})
   end
+
+  defp parse_image(project = %{:avatar_url => nil}) do
+    Exgravatar.gravatar_url(
+      project[:name_with_namespace],
+      s: 80,
+      d: "identicon",
+      f: "y"
+    )
+  end
+  defp parse_image(project), do: project[:avatar_url]
 
   defp average([]), do: 0
   defp average(list), do: Enum.sum(list) / length(list)

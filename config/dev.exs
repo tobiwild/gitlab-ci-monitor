@@ -16,7 +16,8 @@ config :gitlab_ci_monitor, GitlabCiMonitor.Endpoint,
   gitlab_url: "http://localhost:8080/api/v3",
   gitlab_token: "cw3beEjLvG294Zgyx58X",
   gitlab_projects: [
-    "root/test"
+    "root/test",
+    "root/test2"
   ]
 
 # Watch static and templates for browser reloading.
