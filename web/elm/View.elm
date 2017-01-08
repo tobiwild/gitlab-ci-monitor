@@ -3,6 +3,8 @@ module View exposing (..)
 import Models exposing (Project, Model, Msg(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Date.Extra.Config.Config_en_au as DateConfig
+import Date.Extra.Format as DateFormat
 
 
 view : Model -> Html Msg
@@ -12,9 +14,25 @@ view model =
 
 viewProject : Project -> Html Msg
 viewProject project =
-    div [ classList [ ( "project", True ), ( project.status, True ) ] ]
+    div [ class "project" ]
         [ img [ class "project-image", src project.image ] []
         , div [ class "project-content" ]
-            [ h2 [] [ text project.name ]
+            [ div [ class "project-header" ]
+                [ h2 [] [ text project.name ]
+                , span [ classList [ ( "badge", True ), ( project.status, True ) ] ] [ text project.status ]
+                ]
+            , p [ class "project-commit" ]
+                [ div [] [ text project.lastCommitMessage ]
+                , div [ class "info" ]
+                    [ text
+                        (String.join " "
+                            [ "by"
+                            , project.lastCommitAuthor
+                            , "at"
+                            , (DateFormat.format DateConfig.config "%-d/%m/%Y %-H:%M" project.updatedAt)
+                            ]
+                        )
+                    ]
+                ]
             ]
         ]

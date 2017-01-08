@@ -32,3 +32,41 @@ body {
 .project-content {
     margin-left: 95px;
 }
+
+.project-header {
+    overflow: hidden;
+}
+
+.project-commit {
+    margin: 10px 0;
+}
+
+.info {
+    font-size: 11px;
+    color: #555;
+}
+
+h2 {
+    float: left;
+}
+
+.badge {
+    background-color: #aaa;
+    font-weight: bold;
+    color: #fff;
+    border-radius: 5px;
+    float: right;
+    padding: 2px 5px 3px;
+}
+
+.failed {
+    background-color: #f00;
+}
+
+.success {
+    background-color: #0a0;
+}
+
+.running {
+    background-color: #00f;
+}
