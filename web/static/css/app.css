@@ -70,3 +70,19 @@ h2 {
 .running {
     background-color: #00f;
 }
+
+progress[value] {
+    width: 100%;
+    height: 20px;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+progress[value]::-webkit-progress-bar {
+  background-color: #eee;
+  border-radius: 2px;
+}
+
+progress[value]::-webkit-progress-value {
+  background-color: #88f;
+}
