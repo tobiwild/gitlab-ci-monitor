@@ -16,10 +16,29 @@ defmodule Gitlab do
           :status => commit[:status],
           :last_commit_author => commit[:author_name],
           :last_commit_message => commit[:message],
-          :updated_at => commit[:created_at]
+          :updated_at => commit[:created_at],
+          :pipelines => case commit[:status] do
+            "running" -> fetch_pipelines(project)
+            _ -> []
+          end
         }
       }
     end) |> Enum.into(%{})
+  end
+
+  def fetch_pipelines(project_id) do
+    Tanuki.get("projects/#{URI.encode_www_form(project_id)}/builds?scope=running", client)
+    |> Enum.filter(fn build -> build[:ref] == "master" end)
+    |> Enum.map(fn build -> build[:pipeline][:id] end)
+    |> Enum.uniq
+    |> pmap(fn id -> fetch_pipeline(project_id, id) end)
+  end
+
+  def fetch_pipeline(project_id, id) do
+    pipeline = Tanuki.get("projects/#{URI.encode_www_form(project_id)}/pipelines/#{id}", client)
+    %{
+      created_at: pipeline[:created_at]
+    }
   end
 
   def fetch_projects do

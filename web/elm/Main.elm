@@ -6,6 +6,7 @@ import View exposing (view)
 import Phoenix.Socket
 import Html
 import Task
+import Time exposing (Time, second)
 
 
 type alias Flags =
@@ -31,7 +32,7 @@ initPhxSocket flags =
 
 initModel : Flags -> Model
 initModel flags =
-    Model (initPhxSocket flags) []
+    Model (initPhxSocket flags) [] 0
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -41,4 +42,17 @@ init flags =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Phoenix.Socket.listen model.phxSocket PhoenixMsg
+    let
+        pipelineCount =
+            List.map (\p -> List.length p.pipelines) model.projects
+                |> List.foldr (+) 0
+    in
+        case pipelineCount of
+            0 ->
+                Phoenix.Socket.listen model.phxSocket PhoenixMsg
+
+            _ ->
+                Sub.batch
+                    [ Phoenix.Socket.listen model.phxSocket PhoenixMsg
+                    , Time.every second Tick
+                    ]

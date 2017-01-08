@@ -16,7 +16,6 @@ defmodule GitlabCiMonitor.GitlabChannel do
   end
 
   def broadcast_projects do
-    IO.inspect GitlabCiMonitor.Repository.projects
     GitlabCiMonitor.Endpoint.broadcast("gitlab:lobby", "projects", %{list: GitlabCiMonitor.Repository.projects})
   end
 

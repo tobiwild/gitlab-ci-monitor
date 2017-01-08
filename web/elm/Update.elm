@@ -1,11 +1,17 @@
 module Update exposing (..)
 
-import Models exposing (Project, Model, Msg(..))
+import Models exposing (Project, Pipeline, Model, Msg(..))
 import Phoenix.Socket
 import Phoenix.Channel
 import Json.Decode as Decode
 import Json.Decode exposing (field, Decoder)
 import Json.Decode.Extra exposing ((|:))
+
+
+decodePipeline : Decoder Pipeline
+decodePipeline =
+    Decode.succeed Pipeline
+        |: (field "created_at" Json.Decode.Extra.date)
 
 
 decodeProject : Decoder Project
@@ -18,6 +24,7 @@ decodeProject =
         |: (field "last_commit_author" Decode.string)
         |: (field "last_commit_message" Decode.string)
         |: (field "updated_at" Json.Decode.Extra.date)
+        |: (field "pipelines" (Decode.list decodePipeline))
 
 
 decodeProjects : Decoder (List Project)
@@ -50,6 +57,9 @@ update msg model =
                             Debug.crash error
                     in
                         ( model, Cmd.none )
+
+        Tick newTime ->
+            ( { model | now = newTime }, Cmd.none )
 
         JoinChannel ->
             let
