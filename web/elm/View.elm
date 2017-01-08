@@ -79,11 +79,7 @@ view =
 
 viewProjects : List ViewProject -> Html Msg
 viewProjects projects =
-    let
-        _ =
-            Debug.log "VIEW UPDATE" 1
-    in
-        div [ id "container" ] <| List.map viewProject projects
+    div [ id "container" ] <| List.map viewProject projects
 
 
 viewProject : ViewProject -> Html Msg
