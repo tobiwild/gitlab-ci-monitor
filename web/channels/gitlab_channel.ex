@@ -3,7 +3,7 @@ defmodule GitlabCiMonitor.GitlabChannel do
 
   def join("gitlab:lobby", payload, socket) do
     if authorized?(payload) do
-      send(self, :after_join)
+      send(self(), :after_join)
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}

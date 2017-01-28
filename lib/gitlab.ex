@@ -7,8 +7,8 @@ defmodule Gitlab do
   def fetch_commits do
     pmap(config(:gitlab_projects), fn(project) ->
       project_id = URI.encode_www_form(project)
-      branch = Branches.find(project_id, "master", client)
-      commit = Commits.find(project_id, branch.commit.id, client)
+      branch = Branches.find(project_id, "master", client())
+      commit = Commits.find(project_id, branch.commit.id, client())
 
       {
         project,
@@ -27,7 +27,7 @@ defmodule Gitlab do
   end
 
   def fetch_pipelines(project_id) do
-    Tanuki.get("projects/#{URI.encode_www_form(project_id)}/builds?scope=running", client)
+    Tanuki.get("projects/#{URI.encode_www_form(project_id)}/builds?scope=running", client())
     |> Enum.filter(fn build -> build[:ref] == "master" end)
     |> Enum.map(fn build -> build[:pipeline][:id] end)
     |> Enum.uniq
@@ -35,7 +35,7 @@ defmodule Gitlab do
   end
 
   def fetch_pipeline(project_id, id) do
-    pipeline = Tanuki.get("projects/#{URI.encode_www_form(project_id)}/pipelines/#{id}", client)
+    pipeline = Tanuki.get("projects/#{URI.encode_www_form(project_id)}/pipelines/#{id}", client())
     %{
       created_at: pipeline[:created_at]
     }
@@ -43,7 +43,7 @@ defmodule Gitlab do
 
   def fetch_projects do
     pmap(config(:gitlab_projects), fn(project_id) ->
-      project = Projects.find(URI.encode_www_form(project_id), client)
+      project = Projects.find(URI.encode_www_form(project_id), client())
 
       {
         project_id,
@@ -88,7 +88,7 @@ defmodule Gitlab do
   defp average(list), do: Enum.sum(list) / length(list)
 
   defp list_pipelines(project_id) do
-    Tanuki.get("projects/#{URI.encode_www_form(project_id)}/pipelines", client)
+    Tanuki.get("projects/#{URI.encode_www_form(project_id)}/pipelines", client())
   end
 
   defp pmap(collection, function) do
@@ -101,7 +101,7 @@ defmodule Gitlab do
     Client.new(%{private_token: config(:gitlab_token)}, config(:gitlab_url))
   end
 
-  defp config(key) do
+  def config(key) do
     Application.get_env(:gitlab_ci_monitor, GitlabCiMonitor.Endpoint)[key]
   end
 end

@@ -6,6 +6,6 @@ defmodule GitlabCiMonitor.Server.Statistics do
   end
 
   def update_after() do
-    30 * 1000
+    Gitlab.config(:gitlab_statistics_interval) * 1000
   end
 end

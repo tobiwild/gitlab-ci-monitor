@@ -12,33 +12,23 @@ defmodule GitlabCiMonitor.Server do
         GenServer.start_link(__MODULE__, nil, name: __MODULE__)
       end
 
-      def items do
-        GenServer.call(__MODULE__, :items)
-      end
-
       def init(state) do
-        send self, :update
+        if GitlabCiMonitor.Repository.has_items?(__MODULE__) do
+          schedule_work()
+        else
+          send self(), :update
+        end
         {:ok, state}
       end
 
       def handle_info(:update, state) do
-        new_state = update(state)
+        GitlabCiMonitor.Repository.update(
+          __MODULE__,
+          update(state)
+        )
         schedule_work()
 
-        if state != nil and new_state != state do
-          send self, :notify
-        end
-
-        {:noreply, new_state}
-      end
-
-      def handle_info(:notify, state) do
-        GenEvent.notify(:gitlab_event_manager, :update)
         {:noreply, state}
-      end
-
-      def handle_call(:items, _from, state) do
-        {:reply, state, state}
       end
 
       defp schedule_work() do
