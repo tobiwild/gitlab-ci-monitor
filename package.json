@@ -2,6 +2,7 @@
   "repository": {},
   "license": "MIT",
   "scripts": {
+    "install": "cd web/elm && ../../node_modules/.bin/elm-package install -y",
     "deploy": "brunch build --production",
     "watch": "brunch watch --stdin"
   },

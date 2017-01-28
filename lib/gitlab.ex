@@ -1,11 +1,13 @@
 defmodule Gitlab do
+  use Confex, otp_app: :gitlab_ci_monitor
+
   alias Tanuki.Client
   alias Tanuki.Projects.Repository.Branches
   alias Tanuki.Projects.Repository.Commits
   alias Tanuki.Projects
 
   def fetch_commits do
-    pmap(config(:gitlab_projects), fn(project) ->
+    pmap(config()[:projects], fn(project) ->
       project_id = URI.encode_www_form(project)
       branch = Branches.find(project_id, "master", client())
       commit = Commits.find(project_id, branch.commit.id, client())
@@ -42,7 +44,7 @@ defmodule Gitlab do
   end
 
   def fetch_projects do
-    pmap(config(:gitlab_projects), fn(project_id) ->
+    pmap(config()[:projects], fn(project_id) ->
       project = Projects.find(URI.encode_www_form(project_id), client())
 
       {
@@ -56,7 +58,7 @@ defmodule Gitlab do
   end
 
   def fetch_statistics do
-    pmap(config(:gitlab_projects), fn(project_id) ->
+    pmap(config()[:projects], fn(project_id) ->
       duration = list_pipelines(project_id)
       |> Stream.filter(fn p -> p[:ref] == "master" end)
       |> Stream.filter(fn p -> p[:status] == "success" end)
@@ -72,6 +74,15 @@ defmodule Gitlab do
         }
       }
     end) |> Enum.into(%{})
+  end
+
+  def validate_config(conf) do
+    conf = Enum.into(conf, %{})
+    case conf[:projects] do
+      p when is_binary(p) ->
+        %{conf | projects: String.split(p, ",")}
+      _ -> conf
+    end
   end
 
   defp parse_image(project = %{:avatar_url => nil}) do
@@ -98,10 +109,6 @@ defmodule Gitlab do
   end
 
   defp client do
-    Client.new(%{private_token: config(:gitlab_token)}, config(:gitlab_url))
-  end
-
-  def config(key) do
-    Application.get_env(:gitlab_ci_monitor, GitlabCiMonitor.Endpoint)[key]
+    Client.new(%{private_token: config()[:token]}, config()[:url])
   end
 end

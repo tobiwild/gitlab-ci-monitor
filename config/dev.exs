@@ -12,16 +12,18 @@ config :gitlab_ci_monitor, GitlabCiMonitor.Endpoint,
   code_reloader: true,
   check_origin: false,
   watchers: [node: ["node_modules/brunch/bin/brunch", "watch", "--stdin",
-                    cd: Path.expand("../", __DIR__)]],
-  gitlab_url: "http://gitlab.local/api/v3",
-  gitlab_token: "cw3beEjLvG294Zgyx58X",
-  gitlab_projects: [
+                    cd: Path.expand("../", __DIR__)]]
+
+config :gitlab_ci_monitor, Gitlab,
+  url: "http://gitlab.local/api/v3",
+  token: "cw3beEjLvG294Zgyx58X",
+  projects: [
     "root/test",
     "root/test2"
   ],
-  gitlab_commits_interval: 30,
-  gitlab_projects_interval: 30,
-  gitlab_statistics_interval: 30
+  commits_interval: 30,
+  projects_interval: 30,
+  statistics_interval: 30
 
 # Watch static and templates for browser reloading.
 config :gitlab_ci_monitor, GitlabCiMonitor.Endpoint,

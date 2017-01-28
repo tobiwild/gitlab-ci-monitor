@@ -6,6 +6,6 @@ defmodule GitlabCiMonitor.Server.Commits do
   end
 
   def update_after() do
-    Gitlab.config(:gitlab_commits_interval) * 1000
+    Gitlab.config[:commits_interval] * 1000
   end
 end

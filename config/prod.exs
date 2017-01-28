@@ -13,8 +13,19 @@ use Mix.Config
 # which you typically run after static files are built.
 config :gitlab_ci_monitor, GitlabCiMonitor.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "example.com", port: 80],
-  cache_static_manifest: "priv/static/manifest.json"
+  url: [host: "localhost", port: {:system, "PORT"}],
+  cache_static_manifest: "priv/static/manifest.json",
+  server: true,
+  root: ".",
+  version: Mix.Project.config[:version]
+
+config :gitlab_ci_monitor, Gitlab,
+  url: {:system, "GITLAB_URL"},
+  token: {:system, "GITLAB_TOKEN"},
+  projects: {:system, "GITLAB_PROJECTS", []},
+  commits_interval: {:system, :integer,"GITLAB_COMMITS_INTERVAL", 30},
+  projects_interval: {:system, :integer, "GITLAB_PROJECTS_INTERVAL", 600},
+  statistics_interval: {:system, :integer, "GITLAB_STATISTICS_INTERVAL", 600}
 
 # Do not print debug messages in production
 config :logger, level: :info
@@ -55,7 +66,3 @@ config :logger, level: :info
 #
 #     config :gitlab_ci_monitor, GitlabCiMonitor.Endpoint, server: true
 #
-
-# Finally import the config/prod.secret.exs
-# which should be versioned separately.
-import_config "prod.secret.exs"

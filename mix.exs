@@ -17,7 +17,7 @@ defmodule GitlabCiMonitor.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {GitlabCiMonitor, []},
-     applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext, :httpoison]]
+     applications: [:confex, :phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext, :httpoison]]
   end
 
   # Specifies which paths to compile per environment.
@@ -35,7 +35,9 @@ defmodule GitlabCiMonitor.Mixfile do
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
      {:tanuki, "~> 0.2.1"},
-     {:exgravatar, "~> 2.0"}
+     {:exgravatar, "~> 2.0"},
+     {:distillery, "~> 1.1"},
+     {:confex, "~> 1.4"}
     ]
   end
 end
