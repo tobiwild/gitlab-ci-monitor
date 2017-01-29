@@ -3,6 +3,7 @@
 /db
 /deps
 /*.ez
+/rel/gitlab_ci_monitor.tar.gz
 
 # Generated on crash by the VM
 erl_crash.dump
