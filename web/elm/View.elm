@@ -11,6 +11,7 @@ import Date.Extra.Format as DateFormat
 
 type alias ViewPipeline =
     { progressSeconds : Int
+    , remainingSeconds : Int
     , progressPercent : Float
     }
 
@@ -45,9 +46,13 @@ createViewPipeline model project pipeline =
                         * 100
                         |> Basics.min 100
                         |> Basics.max 0
+
+        remainingSeconds =
+            project.duration - progressSeconds |> Basics.max 0
     in
         ViewPipeline
             (round progressSeconds)
+            (round remainingSeconds)
             progressPercent
 
 
@@ -113,5 +118,9 @@ viewPipeline : ViewPipeline -> Html Msg
 viewPipeline pipeline =
     div []
         [ progress [ Html.Attributes.max "100", value (toString pipeline.progressPercent) ] []
-        , span [] [ text ((toString pipeline.progressSeconds) ++ "s") ]
+        , div []
+            [ span [ class "col4" ] [ text ((toString pipeline.progressSeconds) ++ "s") ]
+            , span [ class "col4 center" ] [ text ((toString (round pipeline.progressPercent)) ++ "%") ]
+            , span [ class "col4 right" ] [ text ((toString pipeline.remainingSeconds) ++ "s") ]
+            ]
         ]

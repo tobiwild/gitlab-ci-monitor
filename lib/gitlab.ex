@@ -39,7 +39,7 @@ defmodule Gitlab do
   def fetch_pipeline(project_id, id) do
     pipeline = Tanuki.get("projects/#{URI.encode_www_form(project_id)}/pipelines/#{id}", client())
     %{
-      created_at: pipeline[:created_at]
+      created_at: pipeline[:updated_at]
     }
   end
 

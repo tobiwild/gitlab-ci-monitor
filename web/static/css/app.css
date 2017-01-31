@@ -86,3 +86,16 @@ progress[value]::-webkit-progress-bar {
 progress[value]::-webkit-progress-value {
   background-color: #88f;
 }
+
+.col4 {
+    width: 33%;
+    float: left;
+}
+
+.center {
+    text-align: center;
+}
+
+.right {
+    text-align: right;
+}

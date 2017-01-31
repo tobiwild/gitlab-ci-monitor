@@ -21,9 +21,9 @@ config :gitlab_ci_monitor, Gitlab,
     "root/test",
     "root/test2"
   ],
-  commits_interval: 30,
-  projects_interval: 30,
-  statistics_interval: 30
+  commits_interval: 10,
+  projects_interval: 10,
+  statistics_interval: 10
 
 # Watch static and templates for browser reloading.
 config :gitlab_ci_monitor, GitlabCiMonitor.Endpoint,
