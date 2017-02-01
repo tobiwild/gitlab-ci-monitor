@@ -119,8 +119,22 @@ viewPipeline pipeline =
     div []
         [ progress [ Html.Attributes.max "100", value (toString pipeline.progressPercent) ] []
         , div []
-            [ span [ class "col4" ] [ text ((toString pipeline.progressSeconds) ++ "s") ]
+            [ span [ class "col4" ] [ text (formatTime pipeline.progressSeconds) ]
             , span [ class "col4 center" ] [ text ((toString (round pipeline.progressPercent)) ++ "%") ]
-            , span [ class "col4 right" ] [ text ((toString pipeline.remainingSeconds) ++ "s") ]
+            , span [ class "col4 right" ] [ text (formatTime pipeline.remainingSeconds) ]
             ]
         ]
+
+
+{-| Format 72 seconds as "1:12"
+-}
+formatTime : Int -> String
+formatTime seconds =
+    let
+        m =
+            seconds // 60
+
+        s =
+            seconds - m * 60
+    in
+        toString m ++ ":" ++ (toString s |> String.padLeft 2 '0')
