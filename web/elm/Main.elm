@@ -26,7 +26,6 @@ main =
 initPhxSocket : Flags -> Phoenix.Socket.Socket Msg
 initPhxSocket flags =
     Phoenix.Socket.init flags.websocketUrl
-        |> Phoenix.Socket.withDebug
         |> Phoenix.Socket.on "projects" "gitlab:lobby" ReceiveProjects
 
 

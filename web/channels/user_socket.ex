@@ -5,7 +5,9 @@ defmodule GitlabCiMonitor.UserSocket do
   channel "gitlab:lobby", GitlabCiMonitor.GitlabChannel
 
   ## Transports
-  transport :websocket, Phoenix.Transports.WebSocket
+  transport :websocket, Phoenix.Transports.WebSocket,
+    check_origin: false
+
   # transport :longpoll, Phoenix.Transports.LongPoll
 
   # Socket params are passed from the client and can
