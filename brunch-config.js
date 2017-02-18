@@ -53,8 +53,10 @@ exports.config = {
   // Configure your plugins
   plugins: {
     babel: {
-      // Do not use ES6 compiler in vendor code
-      ignore: [/web\/static\/vendor/]
+      ignore: [
+          /web\/static\/vendor/,
+          'web/static/js/main.js'
+      ]
     },
     elmBrunch: {
       elmFolder: 'web/elm',
@@ -69,6 +71,8 @@ exports.config = {
       "js/app.js": ["web/static/js/app"]
     }
   },
+
+  sourceMaps: false,
 
   npm: {
     enabled: true
