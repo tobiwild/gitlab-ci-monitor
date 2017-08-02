@@ -15,7 +15,7 @@ It works like that:
 
 ```
 docker run \
-    -e GITLAB_URL="http://gitlab.local/api/v3" \
+    -e GITLAB_URL="http://gitlab.local/api/v4" \
     -e GITLAB_TOKEN=cw3beEjLvG294Zgyx58X \
     -e GITLAB_PROJECTS="root/test,root/test2" \
     -p 4000:4000 \

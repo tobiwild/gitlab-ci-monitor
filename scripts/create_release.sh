@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-# USAGE: docker run --rm -v $PWD:/workspace -v $PWD/rel:/output bitwalker/alpine-elixir-phoenix /workspace/scripts/create_release.sh
+# USAGE: docker run --rm -v $PWD:/workspace -v $PWD/rel:/output bitwalker/alpine-elixir /workspace/scripts/create_release.sh
 
 export MIX_ENV=prod
 cp -a /workspace /build

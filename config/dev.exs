@@ -15,11 +15,12 @@ config :gitlab_ci_monitor, GitlabCiMonitor.Endpoint,
                     cd: Path.expand("../", __DIR__)]]
 
 config :gitlab_ci_monitor, Gitlab,
-  url: "http://gitlab.local/api/v3",
-  token: "cw3beEjLvG294Zgyx58X",
+  url: "http://gitlab.local/api/v4",
+  token: "y4xiykbq5jhQPzbf-3vR",
   projects: [
     "root/test",
-    "root/test2"
+    "root/test2",
+    "root/test3"
   ],
   commits_interval: 10,
   projects_interval: 10,
