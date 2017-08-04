@@ -2,7 +2,7 @@ module Models exposing (..)
 
 import Phoenix.Socket
 import Json.Encode
-import Date
+import Date exposing (Date)
 import Time exposing (Time)
 
 
@@ -11,10 +11,11 @@ type Msg
     | ReceiveProjects Json.Encode.Value
     | JoinChannel
     | Tick Time
+    | SetUpdated Date
 
 
 type alias Pipeline =
-    { createdAt : Date.Date
+    { createdAt : Date
     }
 
 
@@ -25,7 +26,7 @@ type alias Project =
     , duration : Float
     , lastCommitAuthor : String
     , lastCommitMessage : String
-    , updatedAt : Date.Date
+    , updatedAt : Date
     , pipelines : List Pipeline
     }
 
@@ -34,4 +35,6 @@ type alias Model =
     { phxSocket : Phoenix.Socket.Socket Msg
     , projects : List Project
     , now : Time
+    , updatedAt : Maybe Date
+    , error : Maybe String
     }

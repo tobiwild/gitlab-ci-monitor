@@ -3,7 +3,7 @@ module View exposing (..)
 import Models exposing (Project, Pipeline, Model, Msg(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Date
+import Date exposing (Date)
 import Time
 import Date.Extra.Config.Config_en_au as DateConfig
 import Date.Extra.Format as DateFormat
@@ -78,13 +78,34 @@ projectsSelector model =
 
 
 view : Model -> Html Msg
-view =
-    viewProjects << projectsSelector
+view model =
+    div []
+        [ viewProjects (projectsSelector model)
+        , viewStatus model
+        ]
+
+
+viewStatus : Model -> Html Msg
+viewStatus model =
+    div
+        [ id "statusPanel"
+        , title (model.error |> Maybe.map (\e -> "Error: " ++ e) |> Maybe.withDefault "")
+        , classList [ ( "error", model.error /= Nothing ) ]
+        ]
+        [ text (statusText model.updatedAt)
+        ]
+
+
+statusText : Maybe Date -> String
+statusText =
+    Maybe.map formatDate
+        >> Maybe.map (\d -> "updated at " ++ d)
+        >> Maybe.withDefault "Not updated yet"
 
 
 viewProjects : List ViewProject -> Html Msg
-viewProjects projects =
-    div [ id "container" ] <| List.map viewProject projects
+viewProjects =
+    div [ id "container" ] << List.map viewProject
 
 
 viewProject : ViewProject -> Html Msg
@@ -104,7 +125,7 @@ viewProject project =
                             [ "by"
                             , project.lastCommitAuthor
                             , "at"
-                            , (DateFormat.format DateConfig.config "%-d/%m/%Y %-H:%M" project.updatedAt)
+                            , formatDate project.updatedAt
                             ]
                         )
                     ]
@@ -124,6 +145,11 @@ viewPipeline pipeline =
             , span [ class "col4 right" ] [ text (formatTime pipeline.remainingSeconds) ]
             ]
         ]
+
+
+formatDate : Date -> String
+formatDate =
+    DateFormat.format DateConfig.config "%d/%m/%Y %H:%M:%S"
 
 
 {-| Format 72 seconds as "1:12"

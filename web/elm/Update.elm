@@ -6,6 +6,8 @@ import Phoenix.Channel
 import Json.Decode as Decode
 import Json.Decode exposing (field, Decoder)
 import Json.Decode.Extra exposing ((|:))
+import Task
+import Date
 
 
 decodePipeline : Decoder Pipeline
@@ -40,26 +42,32 @@ update msg model =
                 ( phxSocket, phxCmd ) =
                     Phoenix.Socket.update msg model.phxSocket
             in
-                ( { model | phxSocket = phxSocket }
-                , Cmd.map PhoenixMsg phxCmd
-                )
+                { model | phxSocket = phxSocket }
+                    ! [ Cmd.map PhoenixMsg phxCmd
+                      ]
 
         ReceiveProjects raw ->
-            case Decode.decodeValue decodeProjects raw of
-                Ok projects ->
-                    ( { model | projects = projects }
-                    , Cmd.none
-                    )
+            let
+                newModel =
+                    case Decode.decodeValue decodeProjects raw of
+                        Ok projects ->
+                            { model
+                                | projects = projects
+                                , error = Nothing
+                            }
 
-                Err error ->
-                    let
-                        _ =
-                            Debug.crash error
-                    in
-                        ( model, Cmd.none )
+                        Err error ->
+                            { model
+                                | error = Just error
+                            }
+            in
+                newModel ! [ Task.perform SetUpdated Date.now ]
+
+        SetUpdated newDate ->
+            { model | updatedAt = Just newDate } ! []
 
         Tick newTime ->
-            ( { model | now = newTime }, Cmd.none )
+            { model | now = newTime } ! []
 
         JoinChannel ->
             let
@@ -69,6 +77,6 @@ update msg model =
                 ( phxSocket, phxCmd ) =
                     Phoenix.Socket.join channel model.phxSocket
             in
-                ( { model | phxSocket = phxSocket }
-                , Cmd.map PhoenixMsg phxCmd
-                )
+                { model | phxSocket = phxSocket }
+                    ! [ Cmd.map PhoenixMsg phxCmd
+                      ]

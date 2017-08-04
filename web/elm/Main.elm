@@ -31,7 +31,12 @@ initPhxSocket flags =
 
 initModel : Flags -> Model
 initModel flags =
-    Model (initPhxSocket flags) [] 0
+    { phxSocket = (initPhxSocket flags)
+    , projects = []
+    , now = 0
+    , updatedAt = Nothing
+    , error = Nothing
+    }
 
 
 init : Flags -> ( Model, Cmd Msg )

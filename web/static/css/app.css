@@ -18,6 +18,31 @@ h2 {
     font-size: 1.3em;
 }
 
+#statusPanel {
+    border-radius: 0 0.3em 0 0;
+    background-color: #444;
+    color: #fff;
+    padding: 0.4em 0.9em 0.4em 0.6em;
+    font-size: 0.7em;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+}
+
+#statusPanel::before {
+    content: '';
+    display: inline-block;
+    background-color: #0f0;
+    width: 1em;
+    height: 1em;
+    border-radius: 0.5em;
+    margin: 0 0.5em -0.1em 0;
+}
+
+#statusPanel.error::before {
+    background-color: #f00;
+}
+
 .project {
     float: left;
     background-color: #fff;
