@@ -89,18 +89,26 @@ viewStatus : Model -> Html Msg
 viewStatus model =
     div
         [ id "statusPanel"
-        , title (model.error |> Maybe.map (\e -> "Error: " ++ e) |> Maybe.withDefault "")
+        , title (statusTitle model)
         , classList [ ( "error", model.error /= Nothing ) ]
         ]
-        [ text (statusText model.updatedAt)
+        [ text (statusText model)
         ]
 
 
-statusText : Maybe Date -> String
-statusText =
-    Maybe.map formatDate
-        >> Maybe.map (\d -> "updated at " ++ d)
-        >> Maybe.withDefault "Not updated yet"
+statusTitle : Model -> String
+statusTitle model =
+    model.error
+        |> Maybe.map (\e -> "Error: " ++ e)
+        |> Maybe.withDefault "Connected"
+
+
+statusText : Model -> String
+statusText model =
+    model.updatedAt
+        |> Maybe.map formatDate
+        |> Maybe.map (\d -> "Updated at " ++ d)
+        |> Maybe.withDefault "Not updated yet"
 
 
 viewProjects : List ViewProject -> Html Msg

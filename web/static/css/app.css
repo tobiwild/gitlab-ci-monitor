@@ -14,8 +14,16 @@ body {
     body { font-size: 1.2vw; }
 }
 
+@media all and (min-width: 800px) {
+    .project-wrap {
+        width: 50%;
+        float: left;
+    }
+}
+
 h2 {
-    font-size: 1.3em;
+    font-size: 1.2em;
+    margin-right: 5em;
 }
 
 #statusPanel {
@@ -43,12 +51,8 @@ h2 {
     background-color: #f00;
 }
 
-.project-wrap {
-    width: 50%;
-    float: left;
-}
-
 .project {
+    position: relative;
     overflow: hidden;
     background-color: #fff;
     padding: 0.7em;
@@ -66,10 +70,6 @@ h2 {
     margin-left: 6em;;
 }
 
-.project-header {
-    overflow: hidden;
-}
-
 .project-commit {
     max-width: 30em;
     margin: 0.7em 0 0;
@@ -81,18 +81,17 @@ h2 {
     color: #555;
 }
 
-h2 {
-    float: left;
-}
-
 .badge {
+    text-align: center;
+    position: absolute;
+    top: 0.7em;
+    right: 0.7em;
+    width: 5em;
     background-color: #aaa;
     font-weight: bold;
     color: #fff;
     border-radius: 0.3em;
-    float: right;
     padding: 0.1em 0.35em;
-    margin-left: 0.8em;
 }
 
 .failed {

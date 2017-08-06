@@ -1,16 +1,13 @@
 module Main exposing (..)
 
-import Models exposing (Model, Msg(..))
+import Models exposing (Model, Flags, Msg(..))
 import Update exposing (update)
 import View exposing (view)
+import Phoenix
+import Phoenix.Channel
 import Phoenix.Socket
 import Html
-import Task
 import Time exposing (Time, second)
-
-
-type alias Flags =
-    { websocketUrl : String }
 
 
 main : Program Flags Model Msg
@@ -23,25 +20,19 @@ main =
         }
 
 
-initPhxSocket : Flags -> Phoenix.Socket.Socket Msg
-initPhxSocket flags =
-    Phoenix.Socket.init flags.websocketUrl
-        |> Phoenix.Socket.on "projects" "gitlab:lobby" ReceiveProjects
-
-
 initModel : Flags -> Model
 initModel flags =
-    { phxSocket = (initPhxSocket flags)
+    { flags = flags
     , projects = []
     , now = 0
     , updatedAt = Nothing
-    , error = Nothing
+    , error = Just "Not connected"
     }
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    (initModel flags) ! [ Task.perform identity (Task.succeed JoinChannel) ]
+    (initModel flags) ! []
 
 
 subscriptions : Model -> Sub Msg
@@ -53,10 +44,26 @@ subscriptions model =
     in
         case pipelineCount of
             0 ->
-                Phoenix.Socket.listen model.phxSocket PhoenixMsg
+                phoenixSubs model
 
             _ ->
                 Sub.batch
-                    [ Phoenix.Socket.listen model.phxSocket PhoenixMsg
+                    [ phoenixSubs model
                     , Time.every second Tick
                     ]
+
+
+phoenixSubs : Model -> Sub Msg
+phoenixSubs model =
+    let
+        socket =
+            Phoenix.Socket.init model.flags.websocketUrl
+
+        channel =
+            Phoenix.Channel.init "gitlab:lobby"
+                |> Phoenix.Channel.on "projects" ReceiveProjects
+                |> Phoenix.Channel.onJoinError (SetError "Could not join channel" |> always)
+                |> Phoenix.Channel.onError (SetError "Channel process crashed")
+                |> Phoenix.Channel.onDisconnect (SetError "Server disconnected")
+    in
+        Phoenix.connect (socket) [ channel ]

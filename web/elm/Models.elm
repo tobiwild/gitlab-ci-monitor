@@ -1,15 +1,13 @@
 module Models exposing (..)
 
-import Phoenix.Socket
 import Json.Encode
 import Date exposing (Date)
 import Time exposing (Time)
 
 
 type Msg
-    = PhoenixMsg (Phoenix.Socket.Msg Msg)
-    | ReceiveProjects Json.Encode.Value
-    | JoinChannel
+    = ReceiveProjects Json.Encode.Value
+    | SetError String
     | Tick Time
     | SetUpdated Date
 
@@ -31,8 +29,12 @@ type alias Project =
     }
 
 
+type alias Flags =
+    { websocketUrl : String }
+
+
 type alias Model =
-    { phxSocket : Phoenix.Socket.Socket Msg
+    { flags : Flags
     , projects : List Project
     , now : Time
     , updatedAt : Maybe Date

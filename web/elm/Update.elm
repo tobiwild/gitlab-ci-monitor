@@ -1,8 +1,6 @@
 module Update exposing (..)
 
 import Models exposing (Project, Pipeline, Model, Msg(..))
-import Phoenix.Socket
-import Phoenix.Channel
 import Json.Decode as Decode
 import Json.Decode exposing (field, Decoder)
 import Json.Decode.Extra exposing ((|:))
@@ -37,46 +35,26 @@ decodeProjects =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        PhoenixMsg msg ->
-            let
-                ( phxSocket, phxCmd ) =
-                    Phoenix.Socket.update msg model.phxSocket
-            in
-                { model | phxSocket = phxSocket }
-                    ! [ Cmd.map PhoenixMsg phxCmd
-                      ]
+        SetError errorMsg ->
+            { model | error = Just errorMsg } ! []
 
         ReceiveProjects raw ->
-            let
-                newModel =
-                    case Decode.decodeValue decodeProjects raw of
-                        Ok projects ->
-                            { model
-                                | projects = projects
-                                , error = Nothing
-                            }
+            case Decode.decodeValue decodeProjects raw of
+                Ok projects ->
+                    { model
+                        | projects = projects
+                        , error = Nothing
+                    }
+                        ! [ Task.perform SetUpdated Date.now ]
 
-                        Err error ->
-                            { model
-                                | error = Just error
-                            }
-            in
-                newModel ! [ Task.perform SetUpdated Date.now ]
+                Err error ->
+                    { model
+                        | error = Just error
+                    }
+                        ! []
 
         SetUpdated newDate ->
             { model | updatedAt = Just newDate } ! []
 
         Tick newTime ->
             { model | now = newTime } ! []
-
-        JoinChannel ->
-            let
-                channel =
-                    Phoenix.Channel.init "gitlab:lobby"
-
-                ( phxSocket, phxCmd ) =
-                    Phoenix.Socket.join channel model.phxSocket
-            in
-                { model | phxSocket = phxSocket }
-                    ! [ Cmd.map PhoenixMsg phxCmd
-                      ]
