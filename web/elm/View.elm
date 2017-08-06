@@ -110,29 +110,31 @@ viewProjects =
 
 viewProject : ViewProject -> Html Msg
 viewProject project =
-    div [ class "project" ]
-        [ img [ class "project-image", src project.image ] []
-        , div [ class "project-content" ]
-            [ div [ class "project-header" ]
-                [ h2 [] [ text project.name ]
-                , span [ classList [ ( "badge", True ), ( project.status, True ) ] ] [ text project.status ]
-                ]
-            , p [ class "project-commit" ]
-                [ div [] [ text project.lastCommitMessage ]
-                , div [ class "info" ]
-                    [ text
-                        (String.join " "
-                            [ "by"
-                            , project.lastCommitAuthor
-                            , "at"
-                            , formatDate project.updatedAt
-                            ]
-                        )
-                    ]
-                ]
-            , div [] <| List.map viewPipeline project.pipelines
+    [ img [ class "project-image", src project.image ] []
+    , div [ class "project-content" ]
+        [ div [ class "project-header" ]
+            [ h2 [] [ text project.name ]
+            , span [ classList [ ( "badge", True ), ( project.status, True ) ] ] [ text project.status ]
             ]
+        , p [ class "project-commit" ]
+            [ div [] [ text project.lastCommitMessage ]
+            , div [ class "info" ]
+                [ text
+                    (String.join " "
+                        [ "by"
+                        , project.lastCommitAuthor
+                        , "at"
+                        , formatDate project.updatedAt
+                        ]
+                    )
+                ]
+            ]
+        , div [] <| List.map viewPipeline project.pipelines
         ]
+    ]
+        |> div [ class "project" ]
+        |> List.singleton
+        |> div [ class "project-wrap" ]
 
 
 viewPipeline : ViewPipeline -> Html Msg

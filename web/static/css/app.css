@@ -43,15 +43,18 @@ h2 {
     background-color: #f00;
 }
 
-.project {
+.project-wrap {
+    width: 50%;
     float: left;
+}
+
+.project {
+    overflow: hidden;
     background-color: #fff;
     padding: 0.7em;
     margin: 0.5em;
     border-radius: 0.2em;
     box-shadow: 0 0.1em 0.4em 0 rgba(0,0,0,0.14);
-    overflow: hidden;
-    min-width: 30em;
 }
 
 .project-image {
