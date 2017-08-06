@@ -5,7 +5,7 @@
 
 body {
     background-color: #eee;
-    margin: 0.5em;
+    margin: 1em 0.5em 0;
     font-family: Verdana, Arial, sans-serif;
     font-size: 15px;
 }
@@ -14,16 +14,14 @@ body {
     body { font-size: 1.2vw; }
 }
 
-@media all and (min-width: 800px) {
-    .project-wrap {
-        width: 50%;
-        float: left;
-    }
-}
-
 h2 {
     font-size: 1.2em;
     margin-right: 5em;
+}
+
+.column {
+    width: 50%;
+    float: left;
 }
 
 #statusPanel {
@@ -56,7 +54,7 @@ h2 {
     overflow: hidden;
     background-color: #fff;
     padding: 0.7em;
-    margin: 0.5em;
+    margin: 0 0.5em 1em;
     border-radius: 0.2em;
     box-shadow: 0 0.1em 0.4em 0 rgba(0,0,0,0.14);
 }

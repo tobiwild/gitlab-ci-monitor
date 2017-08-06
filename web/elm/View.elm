@@ -117,7 +117,20 @@ statusText status =
 
 viewProjects : List ViewProject -> Html Msg
 viewProjects =
-    div [ id "container" ] << List.map viewProject
+    List.map viewProject
+        >> columnize
+        >> div [ id "container" ]
+
+
+columnize : List (Html Msg) -> List (Html Msg)
+columnize =
+    List.indexedMap (,)
+        >> List.partition (\( i, _ ) -> i % 2 == 0)
+        >> (\( left, right ) ->
+                [ div [ class "column" ] (List.unzip left |> Tuple.second)
+                , div [ class "column" ] (List.unzip right |> Tuple.second)
+                ]
+           )
 
 
 viewProject : ViewProject -> Html Msg
@@ -145,8 +158,6 @@ viewProject project =
         ]
     ]
         |> div [ class "project" ]
-        |> List.singleton
-        |> div [ class "project-wrap" ]
 
 
 viewPipeline : ViewPipeline -> Html Msg
