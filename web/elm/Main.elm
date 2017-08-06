@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Models exposing (Model, Flags, Msg(..))
+import Models exposing (Model, Flags, Msg(..), Status(..))
 import Update exposing (update)
 import View exposing (view)
 import Phoenix
@@ -25,8 +25,7 @@ initModel flags =
     { flags = flags
     , projects = []
     , now = 0
-    , updatedAt = Nothing
-    , error = Just "Not connected"
+    , status = Error "Not connected"
     }
 
 
@@ -62,8 +61,8 @@ phoenixSubs model =
         channel =
             Phoenix.Channel.init "gitlab:lobby"
                 |> Phoenix.Channel.on "projects" ReceiveProjects
-                |> Phoenix.Channel.onJoinError (SetError "Could not join channel" |> always)
-                |> Phoenix.Channel.onError (SetError "Channel process crashed")
-                |> Phoenix.Channel.onDisconnect (SetError "Server disconnected")
+                |> Phoenix.Channel.onJoinError (SetStatusError "Could not join channel" |> always)
+                |> Phoenix.Channel.onError (SetStatusError "Channel process crashed")
+                |> Phoenix.Channel.onDisconnect (SetStatusError "Server disconnected")
     in
         Phoenix.connect (socket) [ channel ]

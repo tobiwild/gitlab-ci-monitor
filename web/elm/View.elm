@@ -1,6 +1,6 @@
 module View exposing (..)
 
-import Models exposing (Project, Pipeline, Model, Msg(..))
+import Models exposing (Project, Pipeline, Model, Msg(..), Status(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Date exposing (Date)
@@ -89,26 +89,30 @@ viewStatus : Model -> Html Msg
 viewStatus model =
     div
         [ id "statusPanel"
-        , title (statusTitle model)
-        , classList [ ( "error", model.error /= Nothing ) ]
+        , classList [ ( "error", isStatusError model.status ) ]
         ]
-        [ text (statusText model)
+        [ text (statusText model.status)
         ]
 
 
-statusTitle : Model -> String
-statusTitle model =
-    model.error
-        |> Maybe.map (\e -> "Error: " ++ e)
-        |> Maybe.withDefault "Connected"
+isStatusError : Status -> Bool
+isStatusError status =
+    case status of
+        Error _ ->
+            True
+
+        _ ->
+            False
 
 
-statusText : Model -> String
-statusText model =
-    model.updatedAt
-        |> Maybe.map formatDate
-        |> Maybe.map (\d -> "Updated at " ++ d)
-        |> Maybe.withDefault "Not updated yet"
+statusText : Status -> String
+statusText status =
+    case status of
+        Updated date ->
+            "Updated at " ++ (formatDate date)
+
+        Error error ->
+            "Error: " ++ error
 
 
 viewProjects : List ViewProject -> Html Msg

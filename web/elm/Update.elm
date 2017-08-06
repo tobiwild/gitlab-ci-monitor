@@ -1,6 +1,6 @@
 module Update exposing (..)
 
-import Models exposing (Project, Pipeline, Model, Msg(..))
+import Models exposing (Project, Pipeline, Model, Msg(..), Status(..))
 import Json.Decode as Decode
 import Json.Decode exposing (field, Decoder)
 import Json.Decode.Extra exposing ((|:))
@@ -35,26 +35,25 @@ decodeProjects =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        SetError errorMsg ->
-            { model | error = Just errorMsg } ! []
+        SetStatusUpdated updated ->
+            { model | status = Updated updated } ! []
+
+        SetStatusError error ->
+            { model | status = Error error } ! []
 
         ReceiveProjects raw ->
             case Decode.decodeValue decodeProjects raw of
                 Ok projects ->
                     { model
                         | projects = projects
-                        , error = Nothing
                     }
-                        ! [ Task.perform SetUpdated Date.now ]
+                        ! [ Task.perform SetStatusUpdated Date.now ]
 
-                Err error ->
+                Err _ ->
                     { model
-                        | error = Just error
+                        | status = Error "Could not parse response"
                     }
                         ! []
-
-        SetUpdated newDate ->
-            { model | updatedAt = Just newDate } ! []
 
         Tick newTime ->
             { model | now = newTime } ! []

@@ -7,9 +7,14 @@ import Time exposing (Time)
 
 type Msg
     = ReceiveProjects Json.Encode.Value
-    | SetError String
     | Tick Time
-    | SetUpdated Date
+    | SetStatusUpdated Date
+    | SetStatusError String
+
+
+type Status
+    = Updated Date
+    | Error String
 
 
 type alias Pipeline =
@@ -37,6 +42,5 @@ type alias Model =
     { flags : Flags
     , projects : List Project
     , now : Time
-    , updatedAt : Maybe Date
-    , error : Maybe String
+    , status : Status
     }
