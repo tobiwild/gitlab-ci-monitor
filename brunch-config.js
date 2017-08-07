@@ -43,7 +43,7 @@ exports.config = {
     watched: [
       "web/static",
       "test/static",
-      'web/elm'
+      "web/elm"
     ],
 
     // Where to compile files to
@@ -53,10 +53,7 @@ exports.config = {
   // Configure your plugins
   plugins: {
     babel: {
-      ignore: [
-          /web\/static\/vendor/,
-          'web/static/js/main.js'
-      ]
+      pattern: /^web\/static\/js\/app\.js$/
     },
     elmBrunch: {
       elmFolder: 'web/elm',
