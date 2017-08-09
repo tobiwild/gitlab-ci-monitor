@@ -19,7 +19,7 @@ type alias ViewPipeline =
 type alias ViewProject =
     { name : String
     , image : String
-    , status : String
+    , status : Maybe String
     , lastCommitAuthor : String
     , lastCommitMessage : String
     , updatedAt : Date.Date
@@ -81,12 +81,12 @@ view : Model -> Html Msg
 view model =
     div []
         [ viewProjects (projectsSelector model)
-        , viewStatus model
+        , viewStatusPanel model
         ]
 
 
-viewStatus : Model -> Html Msg
-viewStatus model =
+viewStatusPanel : Model -> Html Msg
+viewStatusPanel model =
     div
         [ id "statusPanel"
         , classList [ ( "error", isStatusError model.status ) ]
@@ -109,7 +109,7 @@ statusText : Status -> String
 statusText status =
     case status of
         Updated date ->
-            "Updated at " ++ (formatDate date)
+            "Updated " ++ (formatDate date)
 
         Error error ->
             "Error: " ++ error
@@ -137,10 +137,10 @@ viewProject : ViewProject -> Html Msg
 viewProject project =
     [ img [ class "project-image", src project.image ] []
     , div [ class "project-content" ]
-        [ div [ class "project-header" ]
+        [ div [ class "project-header" ] <|
             [ h2 [] [ text project.name ]
-            , span [ classList [ ( "badge", True ), ( project.status, True ) ] ] [ text project.status ]
             ]
+                ++ viewStatus project.status
         , p [ class "project-commit" ]
             [ div [] [ text project.lastCommitMessage ]
             , div [ class "info" ]
@@ -148,7 +148,6 @@ viewProject project =
                     (String.join " "
                         [ "by"
                         , project.lastCommitAuthor
-                        , "at"
                         , formatDate project.updatedAt
                         ]
                     )
@@ -158,6 +157,17 @@ viewProject project =
         ]
     ]
         |> div [ class "project" ]
+
+
+viewStatus : Maybe String -> List (Html Msg)
+viewStatus status =
+    case status of
+        Just s ->
+            [ span [ class ("badge " ++ s) ] [ text s ]
+            ]
+
+        Nothing ->
+            []
 
 
 viewPipeline : ViewPipeline -> Html Msg
@@ -174,7 +184,7 @@ viewPipeline pipeline =
 
 formatDate : Date -> String
 formatDate =
-    DateFormat.format DateConfig.config "%d/%m/%Y %H:%M:%S"
+    DateFormat.format DateConfig.config "on %d/%m/%Y at %H:%M:%S"
 
 
 {-| Format 72 seconds as "1:12"

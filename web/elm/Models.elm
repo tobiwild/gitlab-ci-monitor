@@ -25,7 +25,7 @@ type alias Pipeline =
 type alias Project =
     { name : String
     , image : String
-    , status : String
+    , status : Maybe String
     , duration : Float
     , lastCommitAuthor : String
     , lastCommitMessage : String
