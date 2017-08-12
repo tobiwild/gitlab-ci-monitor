@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Models exposing (Model, Flags, Msg(..), Status(..))
 import Update exposing (update)
@@ -8,6 +8,8 @@ import Phoenix.Channel
 import Phoenix.Socket
 import Html
 import Time exposing (Time, second)
+import Json.Decode as Decode
+import Window
 
 
 main : Program Flags Model Msg
@@ -24,6 +26,7 @@ initModel : Flags -> Model
 initModel flags =
     { flags = flags
     , projects = []
+    , projectDomElements = []
     , now = 0
     , status = Error "Not connected"
     }
@@ -34,22 +37,29 @@ init flags =
     (initModel flags) ! []
 
 
+port domElements : (Decode.Value -> msg) -> Sub msg
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
     let
+        defaultSubs =
+            [ phoenixSubs model
+            , domElements ReceiveDomElements
+            , Window.resizes (\_ -> Resize)
+            ]
+
         pipelineCount =
             List.map (\p -> List.length p.pipelines) model.projects
                 |> List.foldr (+) 0
-    in
-        case pipelineCount of
-            0 ->
-                phoenixSubs model
 
-            _ ->
-                Sub.batch
-                    [ phoenixSubs model
-                    , Time.every second Tick
-                    ]
+        subs =
+            if pipelineCount > 0 then
+                (Time.every second Tick) :: defaultSubs
+            else
+                defaultSubs
+    in
+        Sub.batch subs
 
 
 phoenixSubs : Model -> Sub Msg
@@ -61,7 +71,7 @@ phoenixSubs model =
         channel =
             Phoenix.Channel.init "gitlab:lobby"
                 |> Phoenix.Channel.on "projects" ReceiveProjects
-                |> Phoenix.Channel.onJoinError (SetStatusError "Could not join channel" |> always)
+                |> Phoenix.Channel.onJoinError (\_ -> SetStatusError "Could not join channel")
                 |> Phoenix.Channel.onError (SetStatusError "Channel process crashed")
                 |> Phoenix.Channel.onDisconnect (SetStatusError "Server disconnected")
     in

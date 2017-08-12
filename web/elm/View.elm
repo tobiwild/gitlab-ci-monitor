@@ -1,12 +1,15 @@
 module View exposing (..)
 
-import Models exposing (Project, Pipeline, Model, Msg(..), Status(..))
+import Models exposing (Project, DomElement, Pipeline, Model, Msg(..), Status(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Date exposing (Date)
 import Time
 import Date.Extra.Config.Config_en_au as DateConfig
 import Date.Extra.Format as DateFormat
+import Array exposing (Array)
+import Json.Encode
+import Dict exposing (Dict)
 
 
 type alias ViewPipeline =
@@ -17,7 +20,8 @@ type alias ViewPipeline =
 
 
 type alias ViewProject =
-    { name : String
+    { id : String
+    , name : String
     , image : String
     , status : Maybe String
     , lastCommitAuthor : String
@@ -61,6 +65,7 @@ projectsSelector model =
     List.map
         (\p ->
             ViewProject
+                p.id
                 p.name
                 p.image
                 p.status
@@ -80,7 +85,7 @@ projectsSelector model =
 view : Model -> Html Msg
 view model =
     div []
-        [ viewProjects (projectsSelector model)
+        [ viewProjects model.projectDomElements (projectsSelector model)
         , viewStatusPanel model
         ]
 
@@ -115,22 +120,84 @@ statusText status =
             "Error: " ++ error
 
 
-viewProjects : List ViewProject -> Html Msg
-viewProjects =
-    List.map viewProject
-        >> columnize
-        >> div [ id "container" ]
+listToDict : (a -> comparable) -> List a -> Dict comparable a
+listToDict f =
+    List.map (\v -> ( f v, v ))
+        >> Dict.fromList
 
 
-columnize : List (Html Msg) -> List (Html Msg)
-columnize =
-    List.indexedMap (,)
-        >> List.partition (\( i, _ ) -> i % 2 == 0)
-        >> (\( left, right ) ->
-                [ div [ class "column" ] (List.unzip left |> Tuple.second)
-                , div [ class "column" ] (List.unzip right |> Tuple.second)
-                ]
-           )
+projectHeights : List DomElement -> List ViewProject -> List Float
+projectHeights elements =
+    let
+        elemDict =
+            listToDict .id elements
+    in
+        List.map
+            (\project ->
+                elemDict
+                    |> Dict.get project.id
+                    |> Maybe.map .offsetHeight
+                    |> Maybe.withDefault 1
+            )
+
+
+viewProjects : List DomElement -> List ViewProject -> Html Msg
+viewProjects domElements projects =
+    projects
+        |> List.map viewProject
+        |> columnize 2 (projectHeights domElements projects)
+        |> div [ id "container" ]
+
+
+columnize : Int -> List Float -> List (Html Msg) -> List (Html Msg)
+columnize count heights nodes =
+    List.map2 (\height node -> ( height, node )) heights nodes
+        |> List.foldl columnizeStep (Array.repeat count ( 0, [] ))
+        |> Array.toList
+        |> List.map
+            (\( _, column ) ->
+                div [ class "column" ] column
+            )
+
+
+columnizeStep : ( Float, a ) -> Array ( Float, List a ) -> Array ( Float, List a )
+columnizeStep ( height, node ) columns =
+    let
+        defaultColumn =
+            columns
+                |> Array.get 0
+                |> Maybe.withDefault ( 0, [] )
+
+        ( theIndex, ( theHeight, theColumn ) ) =
+            List.foldl
+                (\new current ->
+                    let
+                        ( _, ( newHeight, newColumn ) ) =
+                            new
+
+                        ( _, ( currentHeight, currentColumn ) ) =
+                            current
+
+                        overlap =
+                            newHeight - currentHeight + height
+
+                        maxOverlap =
+                            height / 2
+
+                        len =
+                            List.length
+                    in
+                        if overlap < maxOverlap then
+                            new
+                        else if newHeight < currentHeight && len newColumn < len currentColumn then
+                            new
+                        else
+                            current
+                )
+                ( 0, defaultColumn )
+                (Array.toIndexedList columns)
+    in
+        Array.set theIndex ( theHeight + height, theColumn ++ [ node ] ) columns
 
 
 viewProject : ViewProject -> Html Msg
@@ -156,7 +223,10 @@ viewProject project =
         , div [] <| List.map viewPipeline project.pipelines
         ]
     ]
-        |> div [ class "project" ]
+        |> div
+            [ class "project"
+            , property "projectId" (Json.Encode.string project.id)
+            ]
 
 
 viewStatus : Maybe String -> List (Html Msg)

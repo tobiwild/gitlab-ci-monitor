@@ -1,15 +1,18 @@
 module Models exposing (..)
 
 import Json.Encode
+import Json.Decode
 import Date exposing (Date)
 import Time exposing (Time)
 
 
 type Msg
     = ReceiveProjects Json.Encode.Value
+    | ReceiveDomElements Json.Decode.Value
     | Tick Time
     | SetStatusUpdated Date
     | SetStatusError String
+    | Resize
 
 
 type Status
@@ -22,8 +25,15 @@ type alias Pipeline =
     }
 
 
+type alias DomElement =
+    { id : String
+    , offsetHeight : Float
+    }
+
+
 type alias Project =
-    { name : String
+    { id : String
+    , name : String
     , image : String
     , status : Maybe String
     , duration : Float
@@ -41,6 +51,7 @@ type alias Flags =
 type alias Model =
     { flags : Flags
     , projects : List Project
+    , projectDomElements : List DomElement
     , now : Time
     , status : Status
     }

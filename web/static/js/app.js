@@ -1,28 +1,33 @@
-// Brunch automatically concatenates all files in your
-// watched paths. Those paths can be configured at
-// config.paths.watched in "brunch-config.js".
-//
-// However, those files will only be executed if
-// explicitly imported. The only exception are files
-// in vendor, which are never wrapped in imports and
-// therefore are always executed.
-
-// Import dependencies
-//
-// If you no longer want to use a dependency, remember
-// to also remove its path from "config.paths.watched".
 import "phoenix_html"
-
-// Import local files
-//
-// Local files can be imported directly using relative
-// paths "./socket" or full ones "web/static/js/socket".
 
 import Elm from './main'
 
 const elmDiv = document.querySelector('#elm-target');
 
 if (elmDiv) {
-  var websocketUrl = 'ws://' + window.location.host + '/socket/websocket'
-  Elm.Main.embed(elmDiv, {websocketUrl: websocketUrl});
+    const websocketUrl = 'ws://' + window.location.host + '/socket/websocket'
+    const main = Elm.Main.embed(elmDiv, {websocketUrl: websocketUrl});
+    const requestAnimationFrame =
+       window.requestAnimationFrame ||
+       window.mozRequestAnimationFrame ||
+       window.webkitRequestAnimationFrame ||
+       window.msRequestAnimationFrame
+
+    main.ports.fetchDomElements.subscribe(selector => {
+        // For now the best solution available
+        // https://stackoverflow.com/questions/38952724/how-to-coordinate-rendering-with-port-interactions-elm-0-17
+        requestAnimationFrame(() => {
+            main.ports.domElements.send(
+                Array.from(document.querySelectorAll(selector)).map(elm => {
+                    let rect = elm.getBoundingClientRect()
+                    elm.outerWidth = rect.right - rect.left
+                    elm.outerHeight = rect.bottom - rect.top
+                    // console.log(elm.querySelector('h2').innerHTML)
+                    // console.log('width ', elm.outerWidth)
+                    // console.log('height ', elm.outerHeight)
+                    return elm
+                })
+            )
+        })
+    })
 }

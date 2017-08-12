@@ -1,6 +1,6 @@
-module Update exposing (..)
+port module Update exposing (..)
 
-import Models exposing (Project, Pipeline, Model, Msg(..), Status(..))
+import Models exposing (Project, DomElement, Pipeline, Model, Msg(..), Status(..))
 import Json.Decode as Decode
 import Json.Decode exposing (field, Decoder)
 import Json.Decode.Extra exposing ((|:))
@@ -17,6 +17,7 @@ decodePipeline =
 decodeProject : Decoder Project
 decodeProject =
     Decode.succeed Project
+        |: (field "id" Decode.string)
         |: (field "name" Decode.string)
         |: (field "image" Decode.string)
         |: (field "status" (Decode.maybe Decode.string))
@@ -32,14 +33,45 @@ decodeProjects =
     field "list" (Decode.list decodeProject)
 
 
+decodeProjectDomElement : Decoder DomElement
+decodeProjectDomElement =
+    Decode.succeed DomElement
+        |: field "projectId" Decode.string
+        |: field "outerHeight" Decode.float
+
+
+decodeProjectDomElements : Decoder (List DomElement)
+decodeProjectDomElements =
+    Decode.list decodeProjectDomElement
+
+
+port fetchDomElements : String -> Cmd msg
+
+
+fetchProjectDomElements : Cmd msg
+fetchProjectDomElements =
+    fetchDomElements "#container .project"
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        ReceiveDomElements raw ->
+            case Decode.decodeValue decodeProjectDomElements raw of
+                Ok domElements ->
+                    { model | projectDomElements = domElements } ! []
+
+                Err _ ->
+                    model ! []
+
         SetStatusUpdated updated ->
             { model | status = Updated updated } ! []
 
         SetStatusError error ->
             { model | status = Error error } ! []
+
+        Resize ->
+            model ! [ fetchProjectDomElements ]
 
         ReceiveProjects raw ->
             case Decode.decodeValue decodeProjects raw of
@@ -47,7 +79,7 @@ update msg model =
                     { model
                         | projects = projects
                     }
-                        ! [ Task.perform SetStatusUpdated Date.now ]
+                        ! [ Task.perform SetStatusUpdated Date.now, fetchProjectDomElements ]
 
                 Err _ ->
                     { model

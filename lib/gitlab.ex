@@ -48,6 +48,7 @@ defmodule Gitlab do
       {
         project_id,
         %{
+          :id => project_id,
           :name => project[:name_with_namespace],
           :image => parse_image(project)
         }
