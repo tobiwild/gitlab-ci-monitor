@@ -12,6 +12,10 @@ decodePipeline : Decoder Pipeline
 decodePipeline =
     Decode.succeed Pipeline
         |: (field "created_at" Json.Decode.Extra.date)
+        |: (field "commit_author" Decode.string)
+        |: (field "commit_message" Decode.string)
+        |: (field "commit_created_at" Json.Decode.Extra.date)
+        |: (field "commit_sha" Decode.string)
 
 
 decodeProject : Decoder Project
@@ -22,9 +26,10 @@ decodeProject =
         |: (field "image" Decode.string)
         |: (field "status" (Decode.maybe Decode.string))
         |: (field "duration" Decode.float)
-        |: (field "last_commit_author" Decode.string)
-        |: (field "last_commit_message" Decode.string)
-        |: (field "updated_at" Json.Decode.Extra.date)
+        |: (field "commit_author" Decode.string)
+        |: (field "commit_message" Decode.string)
+        |: (field "commit_created_at" Json.Decode.Extra.date)
+        |: (field "commit_sha" Decode.string)
         |: (field "pipelines" (Decode.list decodePipeline))
 
 
@@ -37,7 +42,7 @@ decodeProjectDomElement : Decoder DomElement
 decodeProjectDomElement =
     Decode.succeed DomElement
         |: field "projectId" Decode.string
-        |: field "outerHeight" Decode.float
+        |: field "offsetHeight" Decode.float
 
 
 decodeProjectDomElements : Decoder (List DomElement)
@@ -50,7 +55,7 @@ port fetchDomElements : String -> Cmd msg
 
 fetchProjectDomElements : Cmd msg
 fetchProjectDomElements =
-    fetchDomElements "#container .project"
+    fetchDomElements "#container .project-wrap"
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -81,9 +86,9 @@ update msg model =
                     }
                         ! [ Task.perform SetStatusUpdated Date.now, fetchProjectDomElements ]
 
-                Err _ ->
+                Err error ->
                     { model
-                        | status = Error "Could not parse response"
+                        | status = Error ("Could not parse response: " ++ error)
                     }
                         ! []
 

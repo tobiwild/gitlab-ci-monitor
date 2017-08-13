@@ -22,6 +22,10 @@ type Status
 
 type alias Pipeline =
     { createdAt : Date
+    , commitAuthor : String
+    , commitMessage : String
+    , commitCreatedAt : Date
+    , commitSha : String
     }
 
 
@@ -37,9 +41,10 @@ type alias Project =
     , image : String
     , status : Maybe String
     , duration : Float
-    , lastCommitAuthor : String
-    , lastCommitMessage : String
-    , updatedAt : Date
+    , commitAuthor : String
+    , commitMessage : String
+    , commitCreatedAt : Date
+    , commitSha : String
     , pipelines : List Pipeline
     }
 

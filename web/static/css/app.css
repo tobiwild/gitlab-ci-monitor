@@ -49,15 +49,33 @@ h2 {
     background-color: #f00;
 }
 
+.project-wrap {
+    padding: 0 0.5em 1em;
+}
+
 .project {
     position: relative;
     overflow: hidden;
     background-color: #fff;
     padding: 0.7em;
-    margin: 0 0.5em 1em;
     border-radius: 0.2em;
     box-shadow: 0 0.1em 0.4em 0 rgba(0,0,0,0.14);
 }
+
+.pipeline-small {
+    font-size: 0.8em;
+    border-top: 1px solid #eee;
+    margin-top: 1em;
+}
+
+.pipeline-small .project-commit {
+    margin: 0.1em 0 0;
+}
+
+.pipeline-small progress[value] {
+    margin-top: 1em;
+}
+
 
 .project-image {
     float: left;
@@ -121,8 +139,12 @@ progress[value]::-webkit-progress-value {
   background-color: #88f;
 }
 
+.row {
+    overflow: hidden;
+}
+
 .col4 {
-    width: 33%;
+    width: 33.33%;
     float: left;
 }
 

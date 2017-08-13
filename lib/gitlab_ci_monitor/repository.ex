@@ -30,7 +30,7 @@ defmodule GitlabCiMonitor.Repository do
         MapUtils.deep_merge(acc, items)
       end)
       |> Map.values
-      |> Enum.sort_by(fn (p) -> p[:updated_at] end, &>=/2),
+      |> Enum.sort_by(fn (p) -> p[:commit_created_at] end, &>=/2),
       state
     }
   end

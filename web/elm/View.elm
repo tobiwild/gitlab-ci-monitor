@@ -16,6 +16,9 @@ type alias ViewPipeline =
     { progressSeconds : Int
     , remainingSeconds : Int
     , progressPercent : Float
+    , commitAuthor : String
+    , commitMessage : String
+    , commitCreatedAt : Date
     }
 
 
@@ -24,10 +27,11 @@ type alias ViewProject =
     , name : String
     , image : String
     , status : Maybe String
-    , lastCommitAuthor : String
-    , lastCommitMessage : String
-    , updatedAt : Date.Date
-    , pipelines : List ViewPipeline
+    , commitAuthor : String
+    , commitMessage : String
+    , commitCreatedAt : Date
+    , pipelinesCurrentCommit : List ViewPipeline
+    , pipelinesPreviousCommits : List ViewPipeline
     }
 
 
@@ -58,6 +62,9 @@ createViewPipeline model project pipeline =
             (round progressSeconds)
             (round remainingSeconds)
             progressPercent
+            pipeline.commitAuthor
+            pipeline.commitMessage
+            pipeline.commitCreatedAt
 
 
 projectsSelector : Model -> List ViewProject
@@ -69,14 +76,26 @@ projectsSelector model =
                 p.name
                 p.image
                 p.status
-                p.lastCommitAuthor
-                p.lastCommitMessage
-                p.updatedAt
+                p.commitAuthor
+                p.commitMessage
+                p.commitCreatedAt
                 (List.map
                     (\pipeline ->
                         createViewPipeline model p pipeline
                     )
-                    p.pipelines
+                 <|
+                    List.filter
+                        (\pl -> pl.commitSha == p.commitSha)
+                        p.pipelines
+                )
+                (List.map
+                    (\pipeline ->
+                        createViewPipeline model p pipeline
+                    )
+                 <|
+                    List.filter
+                        (\pl -> pl.commitSha /= p.commitSha)
+                        p.pipelines
                 )
         )
         model.projects
@@ -200,6 +219,18 @@ columnizeStep ( height, node ) columns =
         Array.set theIndex ( theHeight + height, theColumn ++ [ node ] ) columns
 
 
+trimText : Int -> String -> String
+trimText length text =
+    text
+        |> String.left length
+        |> (\newText ->
+                if newText == text then
+                    newText
+                else
+                    newText ++ "..."
+           )
+
+
 viewProject : ViewProject -> Html Msg
 viewProject project =
     [ img [ class "project-image", src project.image ] []
@@ -209,22 +240,25 @@ viewProject project =
             ]
                 ++ viewStatus project.status
         , p [ class "project-commit" ]
-            [ div [] [ text project.lastCommitMessage ]
+            [ div [] [ text (trimText 210 project.commitMessage) ]
             , div [ class "info" ]
                 [ text
                     (String.join " "
                         [ "by"
-                        , project.lastCommitAuthor
-                        , formatDate project.updatedAt
+                        , project.commitAuthor
+                        , formatDate project.commitCreatedAt
                         ]
                     )
                 ]
             ]
-        , div [] <| List.map viewPipeline project.pipelines
+        , div [] <| List.map viewPipelineCurrentCommit project.pipelinesCurrentCommit
+        , div [] <| List.map viewPipelinePreviousCommits project.pipelinesPreviousCommits
         ]
     ]
+        |> div [ class "project" ]
+        |> List.singleton
         |> div
-            [ class "project"
+            [ class "project-wrap"
             , property "projectId" (Json.Encode.string project.id)
             ]
 
@@ -240,14 +274,33 @@ viewStatus status =
             []
 
 
-viewPipeline : ViewPipeline -> Html Msg
-viewPipeline pipeline =
+viewPipelineCurrentCommit : ViewPipeline -> Html Msg
+viewPipelineCurrentCommit pipeline =
     div []
         [ progress [ Html.Attributes.max "100", value (toString pipeline.progressPercent) ] []
-        , div []
+        , div [ class "row" ]
             [ span [ class "col4" ] [ text (formatTime pipeline.progressSeconds) ]
             , span [ class "col4 center" ] [ text ((toString (round pipeline.progressPercent)) ++ "%") ]
             , span [ class "col4 right" ] [ text (formatTime pipeline.remainingSeconds) ]
+            ]
+        ]
+
+
+viewPipelinePreviousCommits : ViewPipeline -> Html Msg
+viewPipelinePreviousCommits pipeline =
+    div [ class "pipeline-small" ]
+        [ progress [ Html.Attributes.max "100", value (toString pipeline.progressPercent) ] []
+        , p [ class "project-commit" ]
+            [ div [] [ text (trimText 80 pipeline.commitMessage) ]
+            , div [ class "info" ]
+                [ text
+                    (String.join " "
+                        [ "by"
+                        , pipeline.commitAuthor
+                        , formatDate pipeline.commitCreatedAt
+                        ]
+                    )
+                ]
             ]
         ]
 

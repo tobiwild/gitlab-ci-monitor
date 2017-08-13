@@ -20,7 +20,8 @@ config :gitlab_ci_monitor, Gitlab,
   projects: [
     "root/test",
     "root/test2",
-    "root/test3"
+    "root/test3",
+    "root/test4"
   ],
   commits_interval: 10,
   projects_interval: 10,

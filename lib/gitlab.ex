@@ -13,14 +13,14 @@ defmodule Gitlab do
       {
         project,
         %{
-          :status => commit[:status],
-          :last_commit_author => commit[:author_name],
-          :last_commit_message => commit[:message],
-          :updated_at => commit[:created_at],
-          :pipelines => case commit[:status] do
-            "running" -> fetch_running_pipelines(project)
-            "pending" -> fetch_running_pipelines(project)
-            _ -> []
+          status: commit[:status],
+          commit_author: commit[:author_name],
+          commit_message: commit[:message],
+          commit_created_at: commit[:created_at],
+          commit_sha: commit[:id],
+          pipelines: case commit[:status] do
+            nil -> [] # there are no pipelines when status is null
+            _ -> fetch_running_pipelines(project)
           end
         }
       }
@@ -30,15 +30,20 @@ defmodule Gitlab do
   def fetch_running_pipelines(project_id) do
     Tanuki.get("projects/#{URI.encode_www_form(project_id)}/pipelines?status=running&ref=master", client())
     |> pmap(fn pipeline -> fetch_pipeline(project_id, pipeline[:id]) end)
-    |> Enum.map(fn pipeline ->
-      %{
-        created_at: pipeline[:updated_at]
-      }
-     end)
   end
 
-  def fetch_pipeline(project_id, id) do
-    Tanuki.get("projects/#{URI.encode_www_form(project_id)}/pipelines/#{id}", client())
+  def fetch_pipeline(project, id) do
+    project_id = URI.encode_www_form(project)
+    pipeline = Tanuki.get("projects/#{project_id}/pipelines/#{id}", client())
+    commit = Commits.find(project_id, pipeline[:sha], client())
+
+    %{
+      created_at: pipeline[:updated_at],
+      commit_author: commit[:author_name],
+      commit_message: commit[:message],
+      commit_created_at: commit[:created_at],
+      commit_sha: commit[:id]
+    }
   end
 
   def fetch_projects do
@@ -57,15 +62,16 @@ defmodule Gitlab do
   end
 
   def fetch_statistics do
-    pmap(config()[:projects], fn(project_id) ->
-      duration = Tanuki.get("projects/#{URI.encode_www_form(project_id)}/pipelines?status=success&ref=master&per_page=5", client())
-      |> pmap(fn pipeline -> fetch_pipeline(project_id, pipeline[:id]) end)
+    pmap(config()[:projects], fn(project) ->
+      project_id = URI.encode_www_form(project)
+      duration = Tanuki.get("projects/#{project_id}/pipelines?status=success&ref=master&per_page=5", client())
+      |> pmap(fn pipeline -> Tanuki.get("projects/#{project_id}/pipelines/#{pipeline[:id]}", client()) end)
       |> Enum.filter(fn p -> p[:duration] != nil end)
       |> Enum.map(fn p -> p[:duration] end)
       |> average
 
       {
-        project_id,
+        project,
         %{
           :duration => duration
         }

@@ -18,15 +18,7 @@ if (elmDiv) {
         // https://stackoverflow.com/questions/38952724/how-to-coordinate-rendering-with-port-interactions-elm-0-17
         requestAnimationFrame(() => {
             main.ports.domElements.send(
-                Array.from(document.querySelectorAll(selector)).map(elm => {
-                    let rect = elm.getBoundingClientRect()
-                    elm.outerWidth = rect.right - rect.left
-                    elm.outerHeight = rect.bottom - rect.top
-                    // console.log(elm.querySelector('h2').innerHTML)
-                    // console.log('width ', elm.outerWidth)
-                    // console.log('height ', elm.outerHeight)
-                    return elm
-                })
+                Array.from(document.querySelectorAll(selector))
             )
         })
     })
