@@ -7,44 +7,47 @@ exports.config = {
     stylesheets: {
       joinTo: "css/app.css",
       order: {
-        after: ["web/static/css/app.css"] // concat app.css last
+        after: ["css/app.css"] // concat app.css last
       }
     }
   },
 
   conventions: {
-    assets: /^(web\/static\/assets)/,
-    ignored: /^(web\/elm\/elm-stuff)/
+    assets: /^(static)/,
+    ignored: /^(elm\/elm-stuff)/
   },
 
   // Phoenix paths configuration
   paths: {
     // Dependencies and current project directories to watch
     watched: [
-      "web/static",
-      "web/elm"
+      "css",
+      "elm",
+      "js",
+      "static",
+      "vendor"
     ],
 
     // Where to compile files to
-    public: "priv/static"
+    public: "../priv/static"
   },
 
   // Configure your plugins
   plugins: {
     babel: {
-      pattern: /^web\/static\/js\/app\.js$/
+      pattern: /^js\/app\.js$/
     },
     elmBrunch: {
-      elmFolder: 'web/elm',
+      elmFolder: 'elm',
       mainModules: ['Main.elm'],
-      outputFolder: '../static/js',
+      outputFolder: '../js',
       makeParameters: ['--debug', '--warn']
     }
   },
 
   modules: {
     autoRequire: {
-      "js/app.js": ["web/static/js/app"]
+      "js/app.js": ["js/app"]
     }
   },
 

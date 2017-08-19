@@ -1,4 +1,4 @@
-defmodule GitlabCiMonitor.ErrorHelpers do
+defmodule GitlabCiMonitorWeb.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -32,9 +32,9 @@ defmodule GitlabCiMonitor.ErrorHelpers do
     #     dgettext "errors", "is invalid"
     #
     if count = opts[:count] do
-      Gettext.dngettext(GitlabCiMonitor.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(GitlabCiMonitorWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(GitlabCiMonitor.Gettext, "errors", msg, opts)
+      Gettext.dgettext(GitlabCiMonitorWeb.Gettext, "errors", msg, opts)
     end
   end
 end

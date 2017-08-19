@@ -6,11 +6,11 @@
 use Mix.Config
 
 # Configures the endpoint
-config :gitlab_ci_monitor, GitlabCiMonitor.Endpoint,
+config :gitlab_ci_monitor, GitlabCiMonitorWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "M+DP1PJccEqZzmfJNAO5JGhzAeM73vjCKHlvXRa4a745/5vBGWAH7x2u5nnBaeTx",
-  render_errors: [view: GitlabCiMonitor.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: GitlabCiMonitor.PubSub,
+  render_errors: [view: GitlabCiMonitorWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: GitlabCiMonitorWeb.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger

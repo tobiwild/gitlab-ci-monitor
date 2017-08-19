@@ -1,5 +1,5 @@
-defmodule GitlabCiMonitor.GitlabChannel do
-  use GitlabCiMonitor.Web, :channel
+defmodule GitlabCiMonitorWeb.GitlabChannel do
+  use GitlabCiMonitorWeb, :channel
 
   def join("gitlab:lobby", payload, socket) do
     if authorized?(payload) do
@@ -16,7 +16,7 @@ defmodule GitlabCiMonitor.GitlabChannel do
   end
 
   def broadcast_projects do
-    GitlabCiMonitor.Endpoint.broadcast("gitlab:lobby", "projects", %{list: GitlabCiMonitor.Repository.projects})
+    GitlabCiMonitorWeb.Endpoint.broadcast("gitlab:lobby", "projects", %{list: GitlabCiMonitor.Repository.projects})
   end
 
   # Channels can be used in a request/response fashion

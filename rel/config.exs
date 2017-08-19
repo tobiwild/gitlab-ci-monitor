@@ -10,7 +10,7 @@ use Mix.Releases.Config,
     # This sets the default release built by `mix release`
     default_release: :default,
     # This sets the default environment used by `mix release`
-    default_environment: :dev
+    default_environment: Mix.env()
 
 # For a full list of config options for both releases
 # and environments, visit https://hexdocs.pm/distillery/configuration.html
@@ -22,15 +22,21 @@ use Mix.Releases.Config,
 # and environment configuration is called a profile
 
 environment :dev do
+  # If you are running Phoenix, you should make sure that
+  # server: true is set and the code reloader is disabled,
+  # even in dev mode.
+  # It is recommended that you build with MIX_ENV=prod and pass
+  # the --env flag to Distillery explicitly if you want to use
+  # dev mode.
   set dev_mode: true
   set include_erts: false
-  set cookie: :"BB]NomxaG1]pn$NN!CPLH!Y0P`hN^U>,~`QiiIfj}Fu1ZI8XR>|>NEQXS7z2WEB$"
+  set cookie: :"yi?hzEQ{33t5WGxsrIF56(]^eR^yWDMlFKB:F,q:&M*UTa>hpw{>NcTJ3Wit7pRN"
 end
 
 environment :prod do
   set include_erts: true
   set include_src: false
-  set cookie: :"]z=?{^t<q~mAlu@;pj)5^:ULqr3@TGNG48<8%q[UKnJ7vzUBOha@Ua/=KN8Rs^$2"
+  set cookie: :"@x|YZ~YQ37?<N.7hbQv6H/grCH%a(?e8A5m/1)mq^>3M&HtXCC[I2xhGn^=BUO43"
 end
 
 # You may define one or more releases in this file.
@@ -41,9 +47,7 @@ end
 release :gitlab_ci_monitor do
   set version: current_version(:gitlab_ci_monitor)
   set applications: [
-    :gitlab_ci_monitor,
-    tanuki: :load,
-    exgravatar: :load
+    :runtime_tools
   ]
 end
 

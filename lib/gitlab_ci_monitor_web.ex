@@ -1,12 +1,12 @@
-defmodule GitlabCiMonitor.Web do
+defmodule GitlabCiMonitorWeb do
   @moduledoc """
   A module that keeps using definitions for controllers,
   views and so on.
 
   This can be used in your application as:
 
-      use GitlabCiMonitor.Web, :controller
-      use GitlabCiMonitor.Web, :view
+      use GitlabCiMonitorWeb, :controller
+      use GitlabCiMonitorWeb, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -24,16 +24,17 @@ defmodule GitlabCiMonitor.Web do
 
   def controller do
     quote do
-      use Phoenix.Controller
+      use Phoenix.Controller, namespace: GitlabCiMonitorWeb
 
-      import GitlabCiMonitor.Router.Helpers
-      import GitlabCiMonitor.Gettext
+      import GitlabCiMonitorWeb.Router.Helpers
+      import GitlabCiMonitorWeb.Gettext
     end
   end
 
   def view do
     quote do
-      use Phoenix.View, root: "web/templates"
+      use Phoenix.View, root: "lib/gitlab_ci_monitor_web/templates",
+                        namespace: GitlabCiMonitorWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_csrf_token: 0, get_flash: 2, view_module: 1]
@@ -41,9 +42,9 @@ defmodule GitlabCiMonitor.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import GitlabCiMonitor.Router.Helpers
-      import GitlabCiMonitor.ErrorHelpers
-      import GitlabCiMonitor.Gettext
+      import GitlabCiMonitorWeb.Router.Helpers
+      import GitlabCiMonitorWeb.ErrorHelpers
+      import GitlabCiMonitorWeb.Gettext
     end
   end
 
@@ -56,7 +57,7 @@ defmodule GitlabCiMonitor.Web do
   def channel do
     quote do
       use Phoenix.Channel
-      import GitlabCiMonitor.Gettext
+      import GitlabCiMonitorWeb.Gettext
     end
   end
 

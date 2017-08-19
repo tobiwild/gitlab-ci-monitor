@@ -1,8 +1,8 @@
-defmodule GitlabCiMonitor.UserSocket do
+defmodule GitlabCiMonitorWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "gitlab:lobby", GitlabCiMonitor.GitlabChannel
+  channel "gitlab:lobby", GitlabCiMonitorWeb.GitlabChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket,
@@ -32,7 +32,7 @@ defmodule GitlabCiMonitor.UserSocket do
   # Would allow you to broadcast a "disconnect" event and terminate
   # all active sockets and channels for a given user:
   #
-  #     GitlabCiMonitor.Endpoint.broadcast("users_socket:#{user.id}", "disconnect", %{})
+  #     GitlabCiMonitorWeb.Endpoint.broadcast("users_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
   def id(_socket), do: nil

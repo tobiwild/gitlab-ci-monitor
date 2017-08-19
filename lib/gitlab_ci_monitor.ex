@@ -1,4 +1,4 @@
-defmodule GitlabCiMonitor do
+defmodule GitlabCiMonitor.Application do
   use Application
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
@@ -9,7 +9,7 @@ defmodule GitlabCiMonitor do
     # Define workers and child supervisors to be supervised
     children = [
       # Start the endpoint when the application starts
-      supervisor(GitlabCiMonitor.Endpoint, []),
+      supervisor(GitlabCiMonitorWeb.Endpoint, []),
       # Start your own worker by calling: GitlabCiMonitor.Worker.start_link(arg1, arg2, arg3)
       # worker(GitlabCiMonitor.Worker, [arg1, arg2, arg3]),
       worker(GenEvent, [[name: :gitlab_event_manager]]),
@@ -30,7 +30,7 @@ defmodule GitlabCiMonitor do
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
   def config_change(changed, _new, removed) do
-    GitlabCiMonitor.Endpoint.config_change(changed, removed)
+    GitlabCiMonitorWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 end

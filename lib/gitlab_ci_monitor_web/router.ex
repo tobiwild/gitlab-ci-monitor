@@ -1,5 +1,5 @@
-defmodule GitlabCiMonitor.Router do
-  use GitlabCiMonitor.Web, :router
+defmodule GitlabCiMonitorWeb.Router do
+  use GitlabCiMonitorWeb, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -12,14 +12,14 @@ defmodule GitlabCiMonitor.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", GitlabCiMonitor do
+  scope "/", GitlabCiMonitorWeb do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", GitlabCiMonitor do
+  # scope "/api", GitlabCiMonitorWeb do
   #   pipe_through :api
   # end
 end

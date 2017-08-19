@@ -1,7 +1,7 @@
-defmodule GitlabCiMonitor.Endpoint do
+defmodule GitlabCiMonitorWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :gitlab_ci_monitor
 
-  socket "/socket", GitlabCiMonitor.UserSocket
+  socket "/socket", GitlabCiMonitorWeb.UserSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -38,5 +38,5 @@ defmodule GitlabCiMonitor.Endpoint do
     key: "_gitlab_ci_monitor_key",
     signing_salt: "RweTikNs"
 
-  plug GitlabCiMonitor.Router
+  plug GitlabCiMonitorWeb.Router
 end

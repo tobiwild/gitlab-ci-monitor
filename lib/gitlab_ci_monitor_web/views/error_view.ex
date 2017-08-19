@@ -1,5 +1,5 @@
-defmodule GitlabCiMonitor.ErrorView do
-  use GitlabCiMonitor.Web, :view
+defmodule GitlabCiMonitorWeb.ErrorView do
+  use GitlabCiMonitorWeb, :view
 
   def render("404.html", _assigns) do
     "Page not found"

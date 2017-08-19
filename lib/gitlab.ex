@@ -79,7 +79,7 @@ defmodule Gitlab do
     end) |> Enum.into(%{})
   end
 
-  def validate_config(conf) do
+  def validate_config!(conf) do
     conf = Enum.into(conf, %{})
     case conf[:projects] do
       p when is_binary(p) ->
