@@ -15,17 +15,17 @@ config :gitlab_ci_monitor, GitlabCiMonitorWeb.Endpoint,
                     cd: Path.expand("../assets", __DIR__)]]
 
 config :gitlab_ci_monitor, Gitlab,
-  url: "http://gitlab.local/api/v4",
-  token: "y4xiykbq5jhQPzbf-3vR",
-  projects: [
+  url: {:system, "GITLAB_URL", "http://gitlab.local/api/v4"},
+  token: {:system, "GITLAB_TOKEN", "y4xiykbq5jhQPzbf-3vR"},
+  projects: {:system, "GITLAB_PROJECTS", [
     "root/test",
     "root/test2",
     "root/test3",
     "root/test4"
-  ],
-  commits_interval: 10,
-  projects_interval: 10,
-  statistics_interval: 10
+  ]},
+  commits_interval: {:system, :integer,"GITLAB_COMMITS_INTERVAL", 10},
+  projects_interval: {:system, :integer, "GITLAB_PROJECTS_INTERVAL", 10},
+  statistics_interval: {:system, :integer, "GITLAB_STATISTICS_INTERVAL", 10}
 
 # Watch static and templates for browser reloading.
 config :gitlab_ci_monitor, GitlabCiMonitorWeb.Endpoint,
