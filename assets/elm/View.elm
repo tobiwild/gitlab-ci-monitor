@@ -1,15 +1,15 @@
 module View exposing (..)
 
-import Models exposing (Project, DomElement, Pipeline, Model, Msg(..), Status(..))
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Array exposing (Array)
 import Date exposing (Date)
-import Time
 import Date.Extra.Config.Config_en_au as DateConfig
 import Date.Extra.Format as DateFormat
-import Array exposing (Array)
-import Json.Encode
 import Dict exposing (Dict)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Json.Encode
+import Models exposing (DomElement, Model, Msg(..), Pipeline, Project, Status(..))
+import Time
 
 
 type alias ViewPipeline =
@@ -39,8 +39,8 @@ createViewPipeline : Model -> Project -> Pipeline -> ViewPipeline
 createViewPipeline model project pipeline =
     let
         progressSeconds =
-            (Time.inSeconds model.now)
-                - (Time.inSeconds (Date.toTime pipeline.createdAt))
+            Time.inSeconds model.now
+                - Time.inSeconds (Date.toTime pipeline.createdAt)
                 |> Basics.max 0
 
         progressPercent =
@@ -58,13 +58,13 @@ createViewPipeline model project pipeline =
         remainingSeconds =
             project.duration - progressSeconds |> Basics.max 0
     in
-        ViewPipeline
-            (round progressSeconds)
-            (round remainingSeconds)
-            progressPercent
-            pipeline.commitAuthor
-            pipeline.commitMessage
-            pipeline.commitCreatedAt
+    ViewPipeline
+        (round progressSeconds)
+        (round remainingSeconds)
+        progressPercent
+        pipeline.commitAuthor
+        pipeline.commitMessage
+        pipeline.commitCreatedAt
 
 
 projectsSelector : Model -> List ViewProject
@@ -133,7 +133,7 @@ statusText : Status -> String
 statusText status =
     case status of
         Updated date ->
-            "Updated " ++ (formatDate date)
+            "Updated " ++ formatDate date
 
         Error error ->
             "Error: " ++ error
@@ -151,13 +151,13 @@ projectHeights elements =
         elemDict =
             listToDict .id elements
     in
-        List.map
-            (\project ->
-                elemDict
-                    |> Dict.get project.id
-                    |> Maybe.map .offsetHeight
-                    |> Maybe.withDefault 1
-            )
+    List.map
+        (\project ->
+            elemDict
+                |> Dict.get project.id
+                |> Maybe.map .offsetHeight
+                |> Maybe.withDefault 1
+        )
 
 
 viewProjects : List DomElement -> List ViewProject -> Html Msg
@@ -206,17 +206,17 @@ columnizeStep ( height, node ) columns =
                         len =
                             List.length
                     in
-                        if overlap < maxOverlap then
-                            new
-                        else if newHeight < currentHeight && len newColumn < len currentColumn then
-                            new
-                        else
-                            current
+                    if overlap < maxOverlap then
+                        new
+                    else if newHeight < currentHeight && len newColumn < len currentColumn then
+                        new
+                    else
+                        current
                 )
                 ( 0, defaultColumn )
                 (Array.toIndexedList columns)
     in
-        Array.set theIndex ( theHeight + height, theColumn ++ [ node ] ) columns
+    Array.set theIndex ( theHeight + height, theColumn ++ [ node ] ) columns
 
 
 trimText : Int -> String -> String
@@ -280,7 +280,7 @@ viewPipelineCurrentCommit pipeline =
         [ progress [ Html.Attributes.max "100", value (toString pipeline.progressPercent) ] []
         , div [ class "row" ]
             [ span [ class "col4" ] [ text (formatTime pipeline.progressSeconds) ]
-            , span [ class "col4 center" ] [ text ((toString (round pipeline.progressPercent)) ++ "%") ]
+            , span [ class "col4 center" ] [ text (toString (round pipeline.progressPercent) ++ "%") ]
             , span [ class "col4 right" ] [ text (formatTime pipeline.remainingSeconds) ]
             ]
         ]
@@ -321,4 +321,4 @@ formatTime seconds =
         s =
             seconds - m * 60
     in
-        toString m ++ ":" ++ (toString s |> String.padLeft 2 '0')
+    toString m ++ ":" ++ (toString s |> String.padLeft 2 '0')

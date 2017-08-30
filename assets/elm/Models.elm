@@ -1,8 +1,8 @@
 module Models exposing (..)
 
-import Json.Encode
-import Json.Decode
 import Date exposing (Date)
+import Json.Decode
+import Json.Encode
 import Time exposing (Time)
 
 

@@ -1,36 +1,35 @@
 port module Update exposing (..)
 
-import Models exposing (Project, DomElement, Pipeline, Model, Msg(..), Status(..))
-import Json.Decode as Decode
-import Json.Decode exposing (field, Decoder)
-import Json.Decode.Extra exposing ((|:))
-import Task
 import Date
+import Json.Decode as Decode exposing (Decoder, field)
+import Json.Decode.Extra exposing ((|:))
+import Models exposing (DomElement, Model, Msg(..), Pipeline, Project, Status(..))
+import Task
 
 
 decodePipeline : Decoder Pipeline
 decodePipeline =
     Decode.succeed Pipeline
-        |: (field "created_at" Json.Decode.Extra.date)
-        |: (field "commit_author" Decode.string)
-        |: (field "commit_message" Decode.string)
-        |: (field "commit_created_at" Json.Decode.Extra.date)
-        |: (field "commit_sha" Decode.string)
+        |: field "created_at" Json.Decode.Extra.date
+        |: field "commit_author" Decode.string
+        |: field "commit_message" Decode.string
+        |: field "commit_created_at" Json.Decode.Extra.date
+        |: field "commit_sha" Decode.string
 
 
 decodeProject : Decoder Project
 decodeProject =
     Decode.succeed Project
-        |: (field "id" Decode.string)
-        |: (field "name" Decode.string)
-        |: (field "image" Decode.string)
-        |: (field "status" (Decode.maybe Decode.string))
-        |: (field "duration" Decode.float)
-        |: (field "commit_author" Decode.string)
-        |: (field "commit_message" Decode.string)
-        |: (field "commit_created_at" Json.Decode.Extra.date)
-        |: (field "commit_sha" Decode.string)
-        |: (field "pipelines" (Decode.list decodePipeline))
+        |: field "id" Decode.string
+        |: field "name" Decode.string
+        |: field "image" Decode.string
+        |: field "status" (Decode.maybe Decode.string)
+        |: field "duration" Decode.float
+        |: field "commit_author" Decode.string
+        |: field "commit_message" Decode.string
+        |: field "commit_created_at" Json.Decode.Extra.date
+        |: field "commit_sha" Decode.string
+        |: field "pipelines" (Decode.list decodePipeline)
 
 
 decodeProjects : Decoder (List Project)

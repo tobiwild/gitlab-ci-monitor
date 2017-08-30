@@ -1,14 +1,14 @@
 port module Main exposing (..)
 
-import Models exposing (Model, Flags, Msg(..), Status(..))
-import Update exposing (update)
-import View exposing (view)
+import Html
+import Json.Decode as Decode
+import Models exposing (Flags, Model, Msg(..), Status(..))
 import Phoenix
 import Phoenix.Channel
 import Phoenix.Socket
-import Html
 import Time exposing (Time, second)
-import Json.Decode as Decode
+import Update exposing (update)
+import View exposing (view)
 import Window
 
 
@@ -34,7 +34,7 @@ initModel flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    (initModel flags) ! []
+    initModel flags ! []
 
 
 port domElements : (Decode.Value -> msg) -> Sub msg
@@ -55,11 +55,11 @@ subscriptions model =
 
         subs =
             if pipelineCount > 0 then
-                (Time.every second Tick) :: defaultSubs
+                Time.every second Tick :: defaultSubs
             else
                 defaultSubs
     in
-        Sub.batch subs
+    Sub.batch subs
 
 
 phoenixSubs : Model -> Sub Msg
@@ -75,4 +75,4 @@ phoenixSubs model =
                 |> Phoenix.Channel.onError (SetStatusError "Channel process crashed")
                 |> Phoenix.Channel.onDisconnect (SetStatusError "Server disconnected")
     in
-        Phoenix.connect (socket) [ channel ]
+    Phoenix.connect socket [ channel ]
