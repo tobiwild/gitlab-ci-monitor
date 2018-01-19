@@ -1,7 +1,7 @@
 # Gitlab CI Monitor
 
 [![Deps Status](https://beta.hexfaktor.org/badge/all/github/tobiwild/gitlab-ci-monitor.svg)](https://beta.hexfaktor.org/github/tobiwild/gitlab-ci-monitor)
-[![devDependencies Status](https://david-dm.org/tobiwild/gitlab-ci-monitor/dev-status.svg)](https://david-dm.org/tobiwild/gitlab-ci-monitor?type=dev)
+[![devDependencies Status](https://david-dm.org/tobiwild/gitlab-ci-monitor/dev-status.svg?path=assets)](https://david-dm.org/tobiwild/gitlab-ci-monitor?path=assets&type=dev)
 
 Small web app which lists Gitlab projects and their build status/progress. The goal is to teach myself Elixir, Phoenix and Elm.
 
